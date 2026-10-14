@@ -1,8 +1,9 @@
 // Único lugar que conoce la URL de la API, el token y el formato de errores.
-// La URL viene de frontend/.env: el cliente no lee la configuración ni los secretos del servidor.
-const API_URL = import.meta.env.VITE_API_URL;
+import { API_URL } from './config.js';
 const CLAVE_TOKEN = 'token';
+const CLAVE_BORRADOR = 'borrador';
 let alExpirarSesion = () => {};
+let alCambiarPermisos = () => {};
 
 export class ErrorApi extends Error {
   constructor(mensaje, estado, campos = {}) {
@@ -13,8 +14,19 @@ export class ErrorApi extends Error {
 }
 
 export function cuandoExpireSesion(funcion) { alExpirarSesion = funcion; }
+export function cuandoCambienPermisos(funcion) { alCambiarPermisos = funcion; }
 export function haySesion() { return Boolean(sessionStorage.getItem(CLAVE_TOKEN)); }
 export function cerrarSesion() { sessionStorage.removeItem(CLAVE_TOKEN); }
+
+// Lee el id de la cuenta desde el token. La firma la valida el servidor; aquí solo se usa para el borrador.
+function cuentaActual() {
+  const token = sessionStorage.getItem(CLAVE_TOKEN);
+  try {
+    return JSON.parse(atob(token.split('.')[1].replaceAll('-', '+').replaceAll('_', '/'))).sub;
+  } catch {
+    return null;
+  }
+}
 
 async function solicitar(ruta, { metodo = 'GET', datos, signal } = {}) {
   if (!API_URL) throw new ErrorApi('Falta VITE_API_URL en frontend/.env. Ejecuta npm run configurar.', 0);
@@ -36,6 +48,8 @@ async function solicitar(ruta, { metodo = 'GET', datos, signal } = {}) {
     cerrarSesion();
     alExpirarSesion(cuerpo?.error || 'Tu sesión terminó. Inicia sesión de nuevo.');
   }
+  // Un 403 con sesión indica que el rol cambió: la interfaz vuelve a pedir los permisos.
+  if (respuesta.status === 403 && token) alCambiarPermisos();
   if (!respuesta.ok) throw new ErrorApi(cuerpo?.error || 'La API no está disponible. Intenta de nuevo.', respuesta.status, cuerpo?.campos);
   if (!cuerpo) throw new ErrorApi('La respuesta de la API no contiene datos válidos.', respuesta.status);
   return cuerpo;
@@ -59,8 +73,24 @@ export function listarIncidentes({ prioridad = '', estado = '', pagina = 1 } = {
   return solicitar(`/incidentes?${filtros}`, { signal });
 }
 
-export function guardarIncidente(datos, id) {
-  return solicitar(id ? `/incidentes/${id}` : '/incidentes', { metodo: id ? 'PUT' : 'POST', datos });
+export async function guardarIncidente(datos, id) {
+  const cuenta = cuentaActual();
+  try {
+    return await solicitar(id ? `/incidentes/${id}` : '/incidentes', { metodo: id ? 'PUT' : 'POST', datos });
+  } catch (error) {
+    // Si la sesión venció al guardar, los datos quedan en un borrador de esta pestaña para la misma cuenta.
+    if (error.estado === 401 && cuenta) sessionStorage.setItem(CLAVE_BORRADOR, JSON.stringify({ cuenta, datos, id: id || null }));
+    throw error;
+  }
+}
+
+// Entrega el borrador una sola vez y solo a la cuenta que lo escribió.
+export function recuperarBorrador() {
+  const guardado = sessionStorage.getItem(CLAVE_BORRADOR);
+  if (!guardado) return null;
+  sessionStorage.removeItem(CLAVE_BORRADOR);
+  const { cuenta, datos, id } = JSON.parse(guardado);
+  return cuenta === cuentaActual() ? { datos, id } : null;
 }
 
 export function eliminarIncidente(id) {

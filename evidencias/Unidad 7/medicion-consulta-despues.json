@@ -1,0 +1,53 @@
+{
+  "tipo": "consulta",
+  "etiqueta": "despues",
+  "fecha": "2026-10-14T00:58:09.941Z",
+  "registros": 50000,
+  "repeticiones": 30,
+  "resultados": [
+    {
+      "escenario": "Lista inicial, página 1",
+      "medianaMs": 13.27,
+      "p95Ms": 15.73
+    },
+    {
+      "escenario": "Filtro Alta + Resuelto, página 1",
+      "medianaMs": 8.96,
+      "p95Ms": 9.85
+    },
+    {
+      "escenario": "Filtro Alta + Resuelto, página 200",
+      "medianaMs": 13.82,
+      "p95Ms": 16.03
+    }
+  ],
+  "planes": {
+    "conteo": {
+      "tipo": "ref",
+      "indice": "Incidente_prioridad_estado_idx",
+      "filasEstimadas": 4910,
+      "extra": "Using index",
+      "analisis": [
+        "-> Aggregate: count(0)  (cost=983 rows=1) (actual time=1.25..1.25 rows=1 loops=1)",
+        "    -> Covering index lookup on Incidente using Incidente_prioridad_estado_idx (prioridad='Alta', estado='Resuelto')  (cost=492 rows=4910) (actual time=0.0535..0.944 rows=4910 loops=1)"
+      ]
+    },
+    "pagina": {
+      "tipo": "ref",
+      "indice": "Incidente_prioridad_estado_idx",
+      "filasEstimadas": 4910,
+      "extra": null,
+      "analisis": [
+        "-> Limit/Offset: 10/1990 row(s)  (cost=492 rows=10) (actual time=4.71..4.76 rows=10 loops=1)",
+        "    -> Index lookup on Incidente using Incidente_prioridad_estado_idx (prioridad='Alta', estado='Resuelto')  (cost=492 rows=4910) (actual time=0.067..4.66 rows=2000 loops=1)"
+      ]
+    }
+  },
+  "indices": [
+    "PRIMARY(id)",
+    "Incidente_titulo_key(titulo)",
+    "Incidente_estado_idx(estado)",
+    "Incidente_prioridad_estado_idx(prioridad)",
+    "Incidente_prioridad_estado_idx(estado)"
+  ]
+}

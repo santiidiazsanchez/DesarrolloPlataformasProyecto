@@ -33,7 +33,8 @@ model Incidente {
   updatedAt   DateTime  @updatedAt
 
   @@index([estado])
-  @@index([prioridad])
+  // La lista filtra por prioridad y estado a la vez; el índice compuesto también sirve para filtrar solo por prioridad.
+  @@index([prioridad, estado])
 }
 
 enum Rol {

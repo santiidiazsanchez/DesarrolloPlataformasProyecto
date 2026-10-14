@@ -1,0 +1,25 @@
+{
+  "tipo": "red",
+  "etiqueta": "despues",
+  "fecha": "2026-10-14T00:58:43.719Z",
+  "registros": 50000,
+  "repeticiones": 30,
+  "resultados": [
+    {
+      "solicitud": "GET /api/incidentes?pagina=1&limite=10",
+      "estado": 200,
+      "bytesJson": 5345,
+      "bytesTransferidos": 739,
+      "codificacion": "br",
+      "medianaMs": 19.14
+    },
+    {
+      "solicitud": "GET /api/incidentes?pagina=1&limite=50",
+      "estado": 200,
+      "bytesJson": 25390,
+      "bytesTransferidos": 1726,
+      "codificacion": "br",
+      "medianaMs": 21.38
+    }
+  ]
+}

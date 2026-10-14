@@ -1,0 +1,361 @@
+[
+  {
+    "filePath": "backend/middleware/errores.js",
+    "messages": [
+      {
+        "ruleId": "no-unused-vars",
+        "severity": 2,
+        "message": "'next' is defined but never used. Allowed unused args must match /^_/u.",
+        "line": 1,
+        "column": 52,
+        "messageId": "unusedVar",
+        "endLine": 1,
+        "endColumn": 56,
+        "suggestions": [
+          {
+            "messageId": "removeVar",
+            "data": {
+              "varName": "next"
+            },
+            "fix": {
+              "range": [
+                49,
+                55
+              ],
+              "text": ""
+            },
+            "desc": "Remove unused variable 'next'."
+          }
+        ]
+      }
+    ],
+    "suppressedMessages": [],
+    "errorCount": 1,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "frontend/src/App.jsx",
+    "messages": [
+      {
+        "ruleId": "react-hooks/exhaustive-deps",
+        "severity": 1,
+        "message": "React Hook useEffect has a missing dependency: 'cargar'. Either include it or remove the dependency array.",
+        "line": 70,
+        "column": 47,
+        "endLine": 70,
+        "endColumn": 83,
+        "suggestions": [
+          {
+            "desc": "Update the dependencies array to be: [usuario, prioridad, estado, pagina, cargar]",
+            "fix": {
+              "range": [
+                3110,
+                3146
+              ],
+              "text": "[usuario, prioridad, estado, pagina, cargar]"
+            }
+          }
+        ]
+      }
+    ],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 1,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "frontend/src/components/ui/badge.jsx",
+    "messages": [
+      {
+        "ruleId": "no-unused-vars",
+        "severity": 2,
+        "message": "'React' is defined but never used.",
+        "line": 2,
+        "column": 13,
+        "messageId": "unusedVar",
+        "endLine": 2,
+        "endColumn": 18,
+        "suggestions": [
+          {
+            "messageId": "removeVar",
+            "data": {
+              "varName": "React"
+            },
+            "fix": {
+              "range": [
+                89,
+                105
+              ],
+              "text": ""
+            },
+            "desc": "Remove unused variable 'React'."
+          }
+        ]
+      }
+    ],
+    "suppressedMessages": [],
+    "errorCount": 1,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "frontend/src/components/ui/button.jsx",
+    "messages": [
+      {
+        "ruleId": "no-unused-vars",
+        "severity": 2,
+        "message": "'React' is defined but never used.",
+        "line": 2,
+        "column": 13,
+        "messageId": "unusedVar",
+        "endLine": 2,
+        "endColumn": 18,
+        "suggestions": [
+          {
+            "messageId": "removeVar",
+            "data": {
+              "varName": "React"
+            },
+            "fix": {
+              "range": [
+                90,
+                106
+              ],
+              "text": ""
+            },
+            "desc": "Remove unused variable 'React'."
+          }
+        ]
+      }
+    ],
+    "suppressedMessages": [],
+    "errorCount": 1,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "frontend/src/components/ui/card.jsx",
+    "messages": [
+      {
+        "ruleId": "no-unused-vars",
+        "severity": 2,
+        "message": "'React' is defined but never used.",
+        "line": 2,
+        "column": 13,
+        "messageId": "unusedVar",
+        "endLine": 2,
+        "endColumn": 18,
+        "suggestions": [
+          {
+            "messageId": "removeVar",
+            "data": {
+              "varName": "React"
+            },
+            "fix": {
+              "range": [
+                88,
+                104
+              ],
+              "text": ""
+            },
+            "desc": "Remove unused variable 'React'."
+          }
+        ]
+      }
+    ],
+    "suppressedMessages": [],
+    "errorCount": 1,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "frontend/src/components/ui/input.jsx",
+    "messages": [
+      {
+        "ruleId": "no-unused-vars",
+        "severity": 2,
+        "message": "'React' is defined but never used.",
+        "line": 2,
+        "column": 13,
+        "messageId": "unusedVar",
+        "endLine": 2,
+        "endColumn": 18,
+        "suggestions": [
+          {
+            "messageId": "removeVar",
+            "data": {
+              "varName": "React"
+            },
+            "fix": {
+              "range": [
+                89,
+                105
+              ],
+              "text": ""
+            },
+            "desc": "Remove unused variable 'React'."
+          }
+        ]
+      }
+    ],
+    "suppressedMessages": [],
+    "errorCount": 1,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "frontend/src/components/ui/textarea.jsx",
+    "messages": [
+      {
+        "ruleId": "no-unused-vars",
+        "severity": 2,
+        "message": "'React' is defined but never used.",
+        "line": 2,
+        "column": 13,
+        "messageId": "unusedVar",
+        "endLine": 2,
+        "endColumn": 18,
+        "suggestions": [
+          {
+            "messageId": "removeVar",
+            "data": {
+              "varName": "React"
+            },
+            "fix": {
+              "range": [
+                92,
+                108
+              ],
+              "text": ""
+            },
+            "desc": "Remove unused variable 'React'."
+          }
+        ]
+      }
+    ],
+    "suppressedMessages": [],
+    "errorCount": 1,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "frontend/src/main.jsx",
+    "messages": [
+      {
+        "ruleId": "no-unused-vars",
+        "severity": 2,
+        "message": "'React' is defined but never used.",
+        "line": 1,
+        "column": 8,
+        "messageId": "unusedVar",
+        "endLine": 1,
+        "endColumn": 13,
+        "suggestions": [
+          {
+            "messageId": "removeVar",
+            "data": {
+              "varName": "React"
+            },
+            "fix": {
+              "range": [
+                7,
+                18
+              ],
+              "text": ""
+            },
+            "desc": "Remove unused variable 'React'."
+          }
+        ]
+      }
+    ],
+    "suppressedMessages": [],
+    "errorCount": 1,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "prisma/seed.cjs",
+    "messages": [
+      {
+        "ruleId": "no-unused-vars",
+        "severity": 2,
+        "message": "'id' is assigned a value but never used.",
+        "line": 13,
+        "column": 16,
+        "messageId": "unusedVar",
+        "endLine": 13,
+        "endColumn": 18,
+        "suggestions": [
+          {
+            "messageId": "removeVar",
+            "data": {
+              "varName": "id"
+            },
+            "fix": {
+              "range": [
+                669,
+                672
+              ],
+              "text": ""
+            },
+            "desc": "Remove unused variable 'id'."
+          }
+        ]
+      }
+    ],
+    "suppressedMessages": [],
+    "errorCount": 1,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "scripts/casos.cjs",
+    "messages": [
+      {
+        "ruleId": "no-unused-vars",
+        "severity": 2,
+        "message": "'error' is defined but never used.",
+        "line": 110,
+        "column": 12,
+        "messageId": "unusedVar",
+        "endLine": 110,
+        "endColumn": 17
+      }
+    ],
+    "suppressedMessages": [],
+    "errorCount": 1,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  }
+]

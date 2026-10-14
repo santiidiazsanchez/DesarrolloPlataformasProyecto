@@ -1,0 +1,19 @@
+{
+  "tipo": "imagen",
+  "etiqueta": "despues",
+  "fecha": "2026-10-14T00:58:17.061Z",
+  "resultados": [
+    {
+      "archivo": "guia-phishing-1440.webp",
+      "formato": "webp",
+      "dimensiones": "1440x900",
+      "kilobytes": 92.65
+    },
+    {
+      "archivo": "guia-phishing-720.webp",
+      "formato": "webp",
+      "dimensiones": "720x450",
+      "kilobytes": 31.83
+    }
+  ]
+}

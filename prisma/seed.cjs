@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const prisma = require('../backend/config/prisma');
 const ejemplos = require('../backend/models/ejemplos.json');
+const { preparar } = require('../backend/models/incidentes');
 
 // Cuentas de prueba: las contraseñas vienen de .env y solo se guarda su hash bcrypt (costo 12).
 const cuentas = [
@@ -13,7 +14,7 @@ async function sembrar() {
   for (const { id, ...ejemplo } of ejemplos) {
     await prisma.incidente.upsert({
       where: { titulo: ejemplo.titulo }, update: {},
-      create: { ...ejemplo, fecha: new Date(ejemplo.fecha + 'T00:00:00Z'), estado: ejemplo.estado === 'En revisión' ? 'En_revision' : ejemplo.estado },
+      create: preparar(ejemplo),
     });
   }
   console.log('Tres ejemplos disponibles. Los registros existentes no se modifican.');

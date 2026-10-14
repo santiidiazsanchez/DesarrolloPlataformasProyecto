@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560" viewBox="0 0 1100 560" font-family="Arial, sans-serif">
+<defs><marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#33557a"/></marker>
+<style>.c{stroke:#aec2d5;stroke-width:1.5}.t{font-size:17px;font-weight:bold;fill:#1f3d5c;text-anchor:middle}.l{font-size:14px;fill:#26384d;text-anchor:middle}.a{stroke:#33557a;stroke-width:2;fill:none;marker-end:url(#f)}.d{stroke:#33557a;stroke-width:1.5;fill:none;stroke-dasharray:5 4;marker-end:url(#f)}.n{font-size:14px;fill:#3d6185;text-anchor:middle}</style></defs>
+<rect width="1100" height="560" fill="#fff"/>
+<rect class="c" x="30" y="40" width="190" height="120" rx="12" fill="#eaf2ff"/>
+<text class="t" x="125.0" y="70">Ruta</text>
+<text class="l" x="125.0" y="96">routes/incidentes.js</text>
+<text class="l" x="125.0" y="117">autenticar · permitir(rol)</text>
+<text class="l" x="125.0" y="138">validarCuerpo(zod)</text>
+<rect class="c" x="250" y="40" width="190" height="120" rx="12" fill="#eaf8ee"/>
+<text class="t" x="345.0" y="70">Controlador</text>
+<text class="l" x="345.0" y="96">controllers/incidentes.js</text>
+<text class="l" x="345.0" y="117">Solo HTTP: lee req,</text>
+<text class="l" x="345.0" y="138">llama al servicio y responde</text>
+<rect class="c" x="470" y="40" width="190" height="120" rx="12" fill="#fff4df"/>
+<text class="t" x="565.0" y="70">Servicio</text>
+<text class="l" x="565.0" y="96">services/incidentes.js</text>
+<text class="l" x="565.0" y="117">Filtros, paginación,</text>
+<text class="l" x="565.0" y="138">código INC, 400 y 404</text>
+<rect class="c" x="690" y="40" width="190" height="120" rx="12" fill="#eaf2ff"/>
+<text class="t" x="785.0" y="70">Modelo</text>
+<text class="l" x="785.0" y="96">models/incidentes.js</text>
+<text class="l" x="785.0" y="117">Consultas Prisma y</text>
+<text class="l" x="785.0" y="138">forma de la respuesta</text>
+<rect class="c" x="910" y="40" width="160" height="120" rx="12" fill="#eaf8ee"/>
+<text class="t" x="990.0" y="70">MySQL 8.4</text>
+<text class="l" x="990.0" y="96">Índice (prioridad, estado)</text>
+<text class="l" x="990.0" y="117">Usuarios e incidentes</text>
+<text class="l" x="990.0" y="138">Volumen en Docker</text>
+<rect class="c" x="470" y="215" width="410" height="82" rx="12" fill="#f7f9fc"/>
+<text class="t" x="675.0" y="245">utils/codigos.js</text>
+<text class="l" x="675.0" y="271">aCodigo · desdeCodigo</text>
+<text class="l" x="675.0" y="292">"En revisión" ↔ En_revision (un solo lugar)</text>
+<rect class="c" x="30" y="215" width="410" height="82" rx="12" fill="#f7f9fc"/>
+<text class="t" x="235.0" y="245">utils/error-http.js</text>
+<text class="l" x="235.0" y="271">ErrorHttp(400/404) → manejador de errores</text>
+<text class="l" x="235.0" y="292">responde JSON sin trazas</text>
+<rect class="c" x="30" y="345" width="500" height="118" rx="12" fill="#fff4df"/>
+<text class="t" x="280.0" y="375">Pruebas unitarias (npm test)</text>
+<text class="l" x="280.0" y="401">Servicio con el modelo simulado (jest.mock)</text>
+<text class="l" x="280.0" y="422">Validaciones, permisos, token, autenticar,</text>
+<text class="l" x="280.0" y="443">manejador de errores y servicio Fetch del cliente</text>
+<rect class="c" x="570" y="345" width="500" height="118" rx="12" fill="#fff4df"/>
+<text class="t" x="820.0" y="375">Pruebas de integración (npm run test:api)</text>
+<text class="l" x="820.0" y="401">API real contra MySQL de pruebas en Docker</text>
+<text class="l" x="820.0" y="422">CRUD, roles, CORS, validación, gzip y errores</text>
+<text class="l" x="820.0" y="443">Antes y después del refactor: 28 y 30 aprobadas</text>
+<path class="a" d="M220 100.0H248"/>
+<path class="a" d="M440 100.0H468"/>
+<path class="a" d="M660 100.0H688"/>
+<path class="a" d="M880 100.0H908"/>
+<path class="d" d="M565 160V213"/>
+<path class="d" d="M785 160V213"/>
+<path class="d" d="M520 160C520 190 300 185 300 213"/>
+<text class="n" x="550.0" y="510">Antes: el controlador validaba filtros y paginación y repetía 3 veces la conversión del código INC;</text>
+<text class="n" x="550.0" y="532">la traducción de "En revisión" estaba en 4 lugares. Ahora cada capa tiene una sola responsabilidad.</text>
+</svg>

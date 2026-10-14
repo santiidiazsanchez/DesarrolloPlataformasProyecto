@@ -1,6 +1,11 @@
-module.exports = function errores(error, req, res, next) {
+const TITULO_REPETIDO = 'Ya existe un incidente con ese título.';
+
+module.exports = function errores(error, req, res, _next) {
+  // Errores de las reglas del negocio (services): ya traen el código y un mensaje pensado para el usuario.
+  if (error.esperado) return res.status(error.status).json({ error: error.message });
   if (error.tipo === 'cors') return res.status(403).json({ error: 'Origen no permitido.' });
-  if (error.code === 'P2002') return res.status(409).json({ error: 'Ya existe un incidente con ese título.' });
+  // El índice único es el del título: se indica el campo para que el formulario lo marque.
+  if (error.code === 'P2002') return res.status(409).json({ error: TITULO_REPETIDO, campos: { titulo: TITULO_REPETIDO } });
   if (error.code === 'P2025') return res.status(404).json({ error: 'Incidente no encontrado.' });
   if (['P1000', 'P1001', 'P1002', 'P1008', 'P1017', 'P2024'].includes(error.code)) {
     return res.status(503).json({ error: 'La base de datos no está disponible. Intenta de nuevo.' });

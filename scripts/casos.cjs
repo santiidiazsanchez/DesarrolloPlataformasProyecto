@@ -107,7 +107,7 @@ const servidor = app.listen(0, '127.0.0.1', async () => {
     const fallidos = registro.filter((c) => c.resultado !== 'Correcto').length;
     console.log(`\n${registro.length - fallidos} de ${registro.length} casos correctos. Evidencia en evidencias/Unidad 6/casos-de-prueba.md`);
     if (fallidos) process.exitCode = 1;
-  } catch (error) {
+  } catch {
     console.error('No se pudieron ejecutar los casos. Revisa MySQL, las migraciones y npm run db:ejemplos.');
     process.exitCode = 1;
   } finally {

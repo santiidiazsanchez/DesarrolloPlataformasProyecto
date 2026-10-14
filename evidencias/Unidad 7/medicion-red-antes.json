@@ -1,0 +1,23 @@
+{
+  "tipo": "red",
+  "etiqueta": "antes",
+  "fecha": "2026-10-14T00:25:02.116Z",
+  "registros": 50000,
+  "repeticiones": 30,
+  "resultados": [
+    {
+      "solicitud": "GET /api/incidentes?pagina=1&limite=10",
+      "estado": 200,
+      "bytesTransferidos": 6125,
+      "codificacion": "ninguna",
+      "medianaMs": 21.59
+    },
+    {
+      "solicitud": "GET /api/incidentes?pagina=1&limite=50",
+      "estado": 200,
+      "bytesTransferidos": 29290,
+      "codificacion": "ninguna",
+      "medianaMs": 22.82
+    }
+  ]
+}

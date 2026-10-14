@@ -1,5 +1,8 @@
-const { test, before, after } = require('node:test');
+// Pruebas de integración con Jest contra la base exclusiva incidentes_test (npm run test:api).
 const assert = require('node:assert/strict');
+jest.setTimeout(30000);
+// fetch crea los objetos fuera del contexto de Jest: se comparan por contenido con toEqual.
+const igual = (recibido, esperado) => expect(recibido).toEqual(esperado);
 if (new URL(process.env.DATABASE_URL).pathname !== '/incidentes_test') throw new Error('Solo se prueba en incidentes_test.');
 const prisma = require('../config/prisma');
 const bcrypt = require('bcryptjs');
@@ -31,7 +34,7 @@ function iniciarSesion(correo, password) {
 }
 const total = async () => (await (await fetch(url, conToken())).json()).total;
 
-before(async () => {
+beforeAll(async () => {
   await prisma.incidente.deleteMany();
   await prisma.usuario.deleteMany();
   // Reiniciar el contador solo en la base exclusiva de pruebas.
@@ -48,7 +51,7 @@ before(async () => {
     tokens[rol] = (await respuesta.json()).token;
   }
 });
-after(async () => { await new Promise(resolve => servidor.close(resolve)); await prisma.$disconnect(); });
+afterAll(async () => { await new Promise(resolve => servidor.close(resolve)); await prisma.$disconnect(); });
 
 // ---------- Autenticación y contraseñas ----------
 
@@ -56,12 +59,12 @@ test('inicio de sesión correcto entrega un JWT HS256 de 30 minutos sin datos se
   const respuesta = await iniciarSesion(...cuentas.analista);
   assert.equal(respuesta.status, 200);
   const datos = await respuesta.json();
-  assert.deepEqual(Object.keys(datos).sort(), ['expiraEn', 'token', 'usuario']);
-  assert.deepEqual(datos.usuario, { nombre: 'Analista de prueba', correo: 'analista@incidentes.local', rol: 'ANALISTA',
+  igual(Object.keys(datos).sort(), ['expiraEn', 'token', 'usuario']);
+  igual(datos.usuario, { nombre: 'Analista de prueba', correo: 'analista@incidentes.local', rol: 'ANALISTA',
     permisos: { consultar: true, crear: true, actualizar: false, eliminar: false } });
   const { header, payload } = jwt.decode(datos.token, { complete: true });
   assert.equal(header.alg, 'HS256');
-  assert.deepEqual(Object.keys(payload).sort(), ['aud', 'exp', 'iat', 'iss', 'rol', 'sub']);
+  igual(Object.keys(payload).sort(), ['aud', 'exp', 'iat', 'iss', 'rol', 'sub']);
   assert.equal(payload.exp - payload.iat, 30 * 60);
   assert.ok(!JSON.stringify(datos).includes('passwordHash'));
 });
@@ -71,14 +74,14 @@ test('credenciales incorrectas reciben el mismo 401 sin indicar qué campo fall�
   const correoInexistente = await iniciarSesion('nadie@incidentes.local', 'NoEsLaClave-2026');
   assert.equal(claveMala.status, 401);
   assert.equal(correoInexistente.status, 401);
-  assert.deepEqual(await claveMala.json(), await correoInexistente.json());
+  igual(await claveMala.json(), await correoInexistente.json());
 });
 
 test('el inicio de sesión valida el cuerpo y rechaza campos adicionales', async () => {
   const respuesta = await fetch(`${base}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ correo: 'no-es-correo', rol: 'ADMIN' }) });
   assert.equal(respuesta.status, 400);
   const { campos } = await respuesta.json();
-  assert.deepEqual(Object.keys(campos), ['correo', 'password', 'rol']);
+  igual(Object.keys(campos), ['correo', 'password', 'rol']);
 });
 
 test('las contraseñas se guardan solo como hash bcrypt con costo 12', async () => {
@@ -138,7 +141,7 @@ test('permisos por rol: el servidor responde 403 aunque la interfaz oculte el bo
     const direccion = method === 'POST' ? url : `${url}/${id}`;
     const respuesta = await fetch(direccion, method === 'DELETE' ? { method, ...conToken(token) } : opciones(method, { ...ejemplo, titulo: 'Intento sin permiso' }, token));
     assert.equal(respuesta.status, 403);
-    assert.deepEqual(await respuesta.json(), { error: 'Tu rol no tiene permiso para esta acción.' });
+    igual(await respuesta.json(), { error: 'Tu rol no tiene permiso para esta acción.' });
   }
   assert.equal((await (await fetch(`${url}/${id}`, conToken(tokens.analista))).json()).titulo, 'Creado por la analista');
   const revision = await fetch(`${url}/${id}`, opciones('PUT', { ...ejemplo, titulo: 'Creado por la analista', estado: 'En revisión' }, tokens.supervisor));
@@ -151,9 +154,9 @@ test('permisos por rol: el servidor responde 403 aunque la interfaz oculte el bo
 test('el perfil devuelve el rol y los permisos que usa la interfaz', async () => {
   const supervisor = await (await fetch(`${base}/auth/perfil`, conToken(tokens.supervisor))).json();
   assert.equal(supervisor.rol, 'SUPERVISOR');
-  assert.deepEqual(supervisor.permisos, { consultar: true, crear: false, actualizar: true, eliminar: false });
+  igual(supervisor.permisos, { consultar: true, crear: false, actualizar: true, eliminar: false });
   const admin = await (await fetch(`${base}/auth/perfil`, conToken(tokens.admin))).json();
-  assert.deepEqual(admin.permisos, { consultar: true, crear: true, actualizar: true, eliminar: true });
+  igual(admin.permisos, { consultar: true, crear: true, actualizar: true, eliminar: true });
 });
 
 test('un cambio de rol o una cuenta desactivada se aplican aunque el token siga vigente', async () => {
@@ -244,7 +247,7 @@ test('CRUD completo y cambios disponibles en una nueva consulta', async () => {
   assert.match(creado.id, /^INC-\d{3}$/);
   assert.equal(creacion.headers.get('location'), `/api/incidentes/${creado.id}`);
   assert.equal(await total(), 4);
-  assert.deepEqual(await (await fetch(`${url}/${creado.id}`, conToken())).json(), creado);
+  igual(await (await fetch(`${url}/${creado.id}`, conToken())).json(), creado);
   const edicion = await fetch(`${url}/${creado.id}`, opciones('PUT', { ...ejemplo, estado: 'Resuelto' }));
   assert.equal(edicion.status, 200);
   assert.equal((await edicion.json()).estado, 'Resuelto');
@@ -259,7 +262,7 @@ test('CRUD completo y cambios disponibles en una nueva consulta', async () => {
 test('rechaza datos inválidos con un mensaje por campo sin modificar el modelo', async () => {
   const vacio = await fetch(url, opciones('POST', {}));
   assert.equal(vacio.status, 400);
-  assert.deepEqual(Object.keys((await vacio.json()).campos), ['titulo', 'tipo', 'fecha', 'prioridad', 'estado', 'descripcion', 'correo']);
+  igual(Object.keys((await vacio.json()).campos), ['titulo', 'tipo', 'fecha', 'prioridad', 'estado', 'descripcion', 'correo']);
   for (const [datos, campo] of [[{ ...ejemplo, prioridad: 'Urgente' }, 'prioridad'], [{ ...ejemplo, fecha: '2026-02-30' }, 'fecha'], [{ ...ejemplo, fecha: '2999-01-01' }, 'fecha'], [{ ...ejemplo, correo: 'incorrecto' }, 'correo'], [{ ...ejemplo, titulo: 42 }, 'titulo'], [{ ...ejemplo, descripcion: 'x'.repeat(1001) }, 'descripcion']]) {
     const respuesta = await fetch(url, opciones('POST', datos));
     assert.equal(respuesta.status, 400);
@@ -287,7 +290,7 @@ test('el error interno devuelve 500 sin exponer detalles', () => {
   const res = { status(valor) { codigo = valor; return this; }, json(valor) { cuerpo = valor; } };
   errores(new Error('Fallo simulado para comprobar el manejador'), {}, res, () => {});
   assert.equal(codigo, 500);
-  assert.deepEqual(cuerpo, { error: 'No se pudo completar la solicitud.' });
+  igual(cuerpo, { error: 'No se pudo completar la solicitud.' });
 });
 
 test('codificaciones no admitidas devuelven 415 sin modificar los incidentes', async () => {
@@ -334,10 +337,36 @@ test('filtros SQL combinados y paginación', async () => {
   }
 });
 
-test('título duplicado recibe 409 y los ids inválidos reciben 400', async () => {
+test('la lista omite las fechas de auditoría y el detalle las conserva', async () => {
+  const lista = await (await fetch(url, conToken())).json();
+  expect(Object.keys(lista.incidentes[0]).sort()).toEqual(['correo', 'descripcion', 'estado', 'evidencia', 'fecha', 'id', 'prioridad', 'tipo', 'titulo']);
+  const detalle = await (await fetch(`${url}/${lista.incidentes[0].id}`, conToken())).json();
+  expect(detalle).toHaveProperty('createdAt');
+  expect(detalle).toHaveProperty('updatedAt');
+});
+
+test('las respuestas de más de 1 KB se envían con gzip y las pequeñas no', async () => {
+  const largos = [];
+  for (const n of [1, 2, 3]) {
+    largos.push(await prisma.incidente.create({ data: { titulo: `Registro largo ${n}`, tipo: 'Malware', fecha: new Date('2026-09-10T00:00:00Z'),
+      prioridad: 'Baja', estado: 'Registrado', descripcion: 'Descripción extensa del incidente. '.repeat(25), correo: 'prueba@example.com' } }));
+  }
+  try {
+    const grande = await fetch(`${url}?limite=50`, conToken());
+    assert.ok((await grande.text()).length > 1024);
+    assert.equal(grande.headers.get('content-encoding'), 'gzip');
+  } finally {
+    await prisma.incidente.deleteMany({ where: { id: { in: largos.map((l) => l.id) } } });
+  }
+  const pequena = await fetch(`${base}/salud`);
+  assert.equal(pequena.headers.get('content-encoding'), null);
+  assert.equal(await total(), 3);
+});
+
+test('título duplicado recibe 409 con el campo titulo y los ids inválidos reciben 400', async () => {
   const respuesta = await fetch(url, opciones('POST', { ...ejemplo, titulo: 'Correo que suplanta a soporte técnico' }));
   assert.equal(respuesta.status, 409);
-  assert.deepEqual(await respuesta.json(), { error: 'Ya existe un incidente con ese título.' });
+  igual(await respuesta.json(), { error: 'Ya existe un incidente con ese título.', campos: { titulo: 'Ya existe un incidente con ese título.' } });
   for (const id of ['abc', 'INC-0', 'INC-1', 'INC-1.5', 'INC-99999999999']) {
     assert.equal((await fetch(`${url}/${id}`, conToken())).status, 400);
   }
@@ -397,7 +426,7 @@ test('cinco intentos fallidos bloquean el inicio de sesión con 429', async () =
     assert.equal(respuesta.status, 401);
   }
   assert.equal(respuesta.status, 429);
-  assert.deepEqual(await respuesta.json(), { error: 'Demasiados intentos de inicio de sesión. Espera 15 minutos.' });
+  igual(await respuesta.json(), { error: 'Demasiados intentos de inicio de sesión. Espera 15 minutos.' });
   // Durante el bloqueo tampoco se acepta la contraseña correcta.
   assert.equal((await iniciarSesion(...cuentas.admin)).status, 429);
 });
@@ -407,7 +436,7 @@ test('MySQL detenido devuelve 503 sin secretos ni consultas', async () => {
   assert.equal(apagado.status, 0);
   const respuesta = await fetch(url, conToken());
   assert.equal(respuesta.status, 503);
-  assert.deepEqual(await respuesta.json(), { error: 'La base de datos no está disponible. Intenta de nuevo.' });
+  igual(await respuesta.json(), { error: 'La base de datos no está disponible. Intenta de nuevo.' });
 });
 
 test('al superar el límite por minuto la API responde 429', async () => {

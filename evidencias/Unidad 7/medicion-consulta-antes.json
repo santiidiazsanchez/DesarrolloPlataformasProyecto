@@ -1,0 +1,56 @@
+{
+  "tipo": "consulta",
+  "etiqueta": "antes",
+  "fecha": "2026-10-14T00:23:46.421Z",
+  "registros": 50000,
+  "repeticiones": 30,
+  "resultados": [
+    {
+      "escenario": "Lista inicial, página 1",
+      "medianaMs": 12.3,
+      "p95Ms": 14.75
+    },
+    {
+      "escenario": "Filtro Alta + Resuelto, página 1",
+      "medianaMs": 19.33,
+      "p95Ms": 23.69
+    },
+    {
+      "escenario": "Filtro Alta + Resuelto, página 200",
+      "medianaMs": 39.46,
+      "p95Ms": 44.66
+    }
+  ],
+  "planes": {
+    "conteo": {
+      "tipo": "index_merge",
+      "indice": "Incidente_prioridad_idx,Incidente_estado_idx",
+      "filasEstimadas": 4905,
+      "extra": "Using intersect(Incidente_prioridad_idx,Incidente_estado_idx); Using where; Using index",
+      "analisis": [
+        "-> Aggregate: count(0)  (cost=987 rows=1) (actual time=12.6..12.6 rows=1 loops=1)",
+        "    -> Filter: ((Incidente.prioridad = 'Alta') and (Incidente.estado = 'Resuelto'))  (cost=496 rows=4905) (actual time=0.307..12.4 rows=4910 loops=1)",
+        "        -> Intersect rows sorted by row ID  (cost=496 rows=4906) (actual time=0.303..10.9 rows=4910 loops=1)",
+        "            -> Index range scan on Incidente using Incidente_prioridad_idx over (prioridad = 'Alta')  (cost=178e-6..1.75 rows=9812) (actual time=0.135..2.56 rows=9812 loops=1)",
+        "            -> Index range scan on Incidente using Incidente_estado_idx over (estado = 'Resuelto')  (cost=163e-6..3.92 rows=24033) (actual time=0.162..6.34 rows=23370 loops=1)"
+      ]
+    },
+    "pagina": {
+      "tipo": "range",
+      "indice": "Incidente_estado_idx",
+      "filasEstimadas": 24033,
+      "extra": "Using index condition; Using where",
+      "analisis": [
+        "-> Limit/Offset: 10/1990 row(s)  (cost=1309 rows=10) (actual time=22.3..22.4 rows=10 loops=1)",
+        "    -> Filter: (Incidente.prioridad = 'Alta')  (cost=1309 rows=4906) (actual time=0.293..22.3 rows=2000 loops=1)",
+        "        -> Index range scan on Incidente using Incidente_estado_idx over (estado = 'Resuelto'), with index condition: (Incidente.estado = 'Resuelto')  (cost=1309 rows=24033) (actual time=0.289..21.2 rows=9539 loops=1)"
+      ]
+    }
+  },
+  "indices": [
+    "PRIMARY(id)",
+    "Incidente_titulo_key(titulo)",
+    "Incidente_estado_idx(estado)",
+    "Incidente_prioridad_idx(prioridad)"
+  ]
+}

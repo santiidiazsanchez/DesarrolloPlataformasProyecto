@@ -1,5 +1,5 @@
 {
-  "name": "incidentes-unidad-6",
+  "name": "incidentes-unidad-7",
   "version": "1.0.0",
   "private": true,
   "engines": {
@@ -12,15 +12,20 @@
     "start": "node backend/server.js",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node scripts/probar.cjs",
+    "test": "node --experimental-vm-modules --disable-warning=ExperimentalWarning node_modules/jest/bin/jest.js --selectProjects backend frontend",
+    "test:coverage": "node --experimental-vm-modules --disable-warning=ExperimentalWarning node_modules/jest/bin/jest.js --selectProjects backend frontend --coverage",
+    "test:api": "node scripts/probar.cjs",
     "casos": "node scripts/casos.cjs",
     "configurar": "node scripts/configurar.cjs",
     "certificado": "node scripts/certificado.cjs",
+    "imagen": "node scripts/optimizar-imagen.cjs",
+    "medir": "node scripts/medir.cjs",
     "db:iniciar": "docker compose up -d --wait mysql",
     "db:generar": "prisma generate",
     "db:migrar": "prisma migrate deploy",
     "db:ejemplos": "node prisma/seed.cjs",
-    "db:ver": "prisma studio --browser none --hostname 127.0.0.1"
+    "db:ver": "prisma studio --browser none --hostname 127.0.0.1",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@prisma/client": "6.19.3",
@@ -28,6 +33,7 @@
     "bcryptjs": "3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "compression": "1.8.2",
     "cors": "2.8.6",
     "dotenv": "17.4.2",
     "express": "5.2.1",
@@ -41,14 +47,23 @@
     "zod": "4.6.5"
   },
   "devDependencies": {
+    "@babel/core": "8.0.7",
+    "@babel/preset-env": "8.0.7",
+    "@eslint/js": "10.0.1",
     "@tailwindcss/vite": "4.3.3",
     "@vitejs/plugin-react": "6.1.1",
     "concurrently": "9.2.5",
+    "eslint": "10.12.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "17.13.0",
+    "jest": "30.5.2",
     "prisma": "6.19.3",
+    "sharp": "0.35.5",
     "tailwindcss": "4.3.3",
     "vite": "8.3.0"
   },
   "overrides": {
-    "deepmerge-ts": "8.0.0"
+    "deepmerge-ts": "8.0.0",
+    "argparse": "2.0.1"
   }
 }

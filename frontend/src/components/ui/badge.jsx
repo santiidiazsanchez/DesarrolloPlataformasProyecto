@@ -1,5 +1,4 @@
 // shadcn/ui (MIT). Fuente: https://ui.shadcn.com/r/styles/new-york-v4/badge.json
-import * as React from "react";
 import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
