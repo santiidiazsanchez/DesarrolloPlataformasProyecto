@@ -1,8 +1,0 @@
-/* Instalar con pnpm install; regenerar con pnpm build después de cambiar clases. */
-/* Se omite Preflight para conservar la apariencia nativa del formulario. */
-@layer theme, base, components, utilities;
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities) source(none);
-
-@source "../index.html";
-@source "../js/incidentes.js";
