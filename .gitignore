@@ -1,3 +1,10 @@
 ## Vacío por ahora jeje pero sí tenemos el CI/CD y git
 node_modules/
 tareas/
+frontend/dist/
+*.zip
+.env
+.env.*
+!.env.example
+*.log
+certificados/

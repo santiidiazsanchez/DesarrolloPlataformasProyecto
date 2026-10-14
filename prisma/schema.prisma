@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Prioridad {
+  Alta
+  Media
+  Baja
+}
+
+enum Estado {
+  Registrado
+  En_revision @map("En revisión")
+  Resuelto
+}
+
+model Incidente {
+  id          Int       @id @default(autoincrement())
+  titulo      String    @unique @db.VarChar(100)
+  tipo        String    @db.VarChar(40)
+  fecha       DateTime  @db.Date
+  prioridad   Prioridad @default(Media)
+  estado      Estado    @default(Registrado)
+  descripcion String    @db.VarChar(1000)
+  correo      String    @db.VarChar(120)
+  evidencia   String    @default("") @db.VarChar(150)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([estado])
+  @@index([prioridad])
+}
+
+enum Rol {
+  ANALISTA
+  SUPERVISOR
+  ADMIN
+}
+
+// Solo se guarda el hash bcrypt; la contraseña nunca llega a la base.
+model Usuario {
+  id           Int      @id @default(autoincrement())
+  nombre       String   @db.VarChar(80)
+  correo       String   @unique @db.VarChar(120)
+  passwordHash String   @db.VarChar(100)
+  rol          Rol      @default(ANALISTA)
+  activo       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

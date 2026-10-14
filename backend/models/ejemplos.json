@@ -1,0 +1,35 @@
+[
+  {
+    "id": "INC-001",
+    "titulo": "Correo que suplanta a soporte técnico",
+    "tipo": "Phishing",
+    "fecha": "2026-09-01",
+    "prioridad": "Alta",
+    "estado": "En revisión",
+    "descripcion": "Se recibió un correo que solicita cambiar la contraseña del correo institucional mediante un enlace desconocido. El enlace no fue abierto.",
+    "correo": "soporte@example.com",
+    "evidencia": ""
+  },
+  {
+    "id": "INC-002",
+    "titulo": "Alerta de malware en laboratorio",
+    "tipo": "Malware",
+    "fecha": "2026-09-02",
+    "prioridad": "Media",
+    "estado": "Registrado",
+    "descripcion": "El antivirus del equipo LAB-04 detectó un archivo sospechoso en una memoria USB y lo puso en cuarentena. Se solicitó revisar el equipo.",
+    "correo": "laboratorio@example.com",
+    "evidencia": ""
+  },
+  {
+    "id": "INC-003",
+    "titulo": "Interrupción breve del portal interno",
+    "tipo": "Fallo de disponibilidad",
+    "fecha": "2026-09-03",
+    "prioridad": "Baja",
+    "estado": "Resuelto",
+    "descripcion": "El portal interno dejó de responder durante cinco minutos. El servicio se restableció y el equipo de redes confirmó su disponibilidad.",
+    "correo": "redes@example.com",
+    "evidencia": ""
+  }
+]
