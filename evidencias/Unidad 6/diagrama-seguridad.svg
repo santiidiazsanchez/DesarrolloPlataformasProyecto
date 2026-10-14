@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="600" viewBox="0 0 1100 600" font-family="Arial, sans-serif">
+  <defs>
+    <marker id="flecha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#33557a"/>
+    </marker>
+    <style>
+      .caja { stroke: #aec2d5; stroke-width: 1.5; }
+      .titulo { font-size: 17px; font-weight: bold; fill: #1f3d5c; text-anchor: middle; }
+      .linea { font-size: 14px; fill: #26384d; text-anchor: middle; }
+      .flecha { stroke: #33557a; stroke-width: 2; fill: none; marker-end: url(#flecha); }
+      .nota { font-size: 14px; fill: #3d6185; text-anchor: middle; }
+    </style>
+  </defs>
+  <rect width="1100" height="600" fill="#ffffff"/>
+
+  <!-- Fila 1 -->
+  <rect class="caja" x="30" y="30" width="230" height="120" rx="12" fill="#eaf2ff"/>
+  <text class="titulo" x="145" y="62">1. React (navegador)</text>
+  <text class="linea" x="145" y="90">Inicio de sesión</text>
+  <text class="linea" x="145" y="112">Token en sessionStorage</text>
+  <text class="linea" x="145" y="134">Authorization: Bearer</text>
+
+  <rect class="caja" x="300" y="30" width="230" height="120" rx="12" fill="#eaf8ee"/>
+  <text class="titulo" x="415" y="62">2. CORS y Helmet</text>
+  <text class="linea" x="415" y="90">Solo orígenes de CLIENT_ORIGIN</text>
+  <text class="linea" x="415" y="112">Otro origen: 403</text>
+  <text class="linea" x="415" y="134">Encabezados seguros, no-store</text>
+
+  <rect class="caja" x="570" y="30" width="230" height="120" rx="12" fill="#fff4df"/>
+  <text class="titulo" x="685" y="62">3. Límites de solicitudes</text>
+  <text class="linea" x="685" y="90">100 por minuto por IP</text>
+  <text class="linea" x="685" y="112">Login: 5 fallos cada 15 min</text>
+  <text class="linea" x="685" y="134">Exceso: 429</text>
+
+  <rect class="caja" x="840" y="30" width="230" height="120" rx="12" fill="#eaf2ff"/>
+  <text class="titulo" x="955" y="62">4. Autenticación JWT</text>
+  <text class="linea" x="955" y="90">Firma HS256 y vencimiento</text>
+  <text class="linea" x="955" y="112">Cuenta activa y rol en MySQL</text>
+  <text class="linea" x="955" y="134">Falla: 401</text>
+
+  <path class="flecha" d="M260 90H298"/>
+  <path class="flecha" d="M530 90H568"/>
+  <path class="flecha" d="M800 90H838"/>
+  <path class="flecha" d="M955 150V190H145V228"/>
+  <text class="nota" x="550" y="182">En producción el tráfico llega cifrado por HTTPS (proxy con TLS); en local se probó con npm run certificado.</text>
+
+  <!-- Fila 2 -->
+  <rect class="caja" x="30" y="230" width="230" height="120" rx="12" fill="#eaf8ee"/>
+  <text class="titulo" x="145" y="262">5. Autorización por rol</text>
+  <text class="linea" x="145" y="290">permitir(permisos.acción)</text>
+  <text class="linea" x="145" y="312">Analista · Supervisor · Admin</text>
+  <text class="linea" x="145" y="334">Sin permiso: 403</text>
+
+  <rect class="caja" x="300" y="230" width="230" height="120" rx="12" fill="#fff4df"/>
+  <text class="titulo" x="415" y="262">6. Validación y limpieza</text>
+  <text class="linea" x="415" y="290">zod: campos, tipos y formato</text>
+  <text class="linea" x="415" y="312">sanitize-html: sin etiquetas</text>
+  <text class="linea" x="415" y="334">Error: 400 con cada campo</text>
+
+  <rect class="caja" x="570" y="230" width="230" height="120" rx="12" fill="#eaf2ff"/>
+  <text class="titulo" x="685" y="262">7. Controlador y Prisma</text>
+  <text class="linea" x="685" y="290">Consultas parametrizadas</text>
+  <text class="linea" x="685" y="312">Ids generados por MySQL</text>
+  <text class="linea" x="685" y="334">Errores sin trazas internas</text>
+
+  <rect class="caja" x="840" y="230" width="230" height="120" rx="12" fill="#eaf8ee"/>
+  <text class="titulo" x="955" y="262">8. MySQL 8.4</text>
+  <text class="linea" x="955" y="290">Usuario: passwordHash bcrypt</text>
+  <text class="linea" x="955" y="312">Incidente: enums y título único</text>
+  <text class="linea" x="955" y="334">Volumen en Docker</text>
+
+  <path class="flecha" d="M260 290H298"/>
+  <path class="flecha" d="M530 290H568"/>
+  <path class="flecha" d="M800 290H838"/>
+
+  <!-- Permisos y respuestas -->
+  <rect class="caja" x="30" y="390" width="505" height="160" rx="12" fill="#f7f9fc"/>
+  <text class="titulo" x="282" y="422">Permisos por rol (menor privilegio)</text>
+  <text class="linea" x="282" y="452">Analista: consultar y crear</text>
+  <text class="linea" x="282" y="476">Supervisor: consultar y actualizar</text>
+  <text class="linea" x="282" y="500">Administrador: consultar, crear, actualizar y eliminar</text>
+  <text class="linea" x="282" y="530">La API envía estos permisos al perfil y React oculta los botones.</text>
+
+  <rect class="caja" x="565" y="390" width="505" height="160" rx="12" fill="#f7f9fc"/>
+  <text class="titulo" x="817" y="422">Respuestas controladas</text>
+  <text class="linea" x="817" y="452">401 sin token, token alterado o vencido</text>
+  <text class="linea" x="817" y="476">403 rol sin permiso u origen no permitido</text>
+  <text class="linea" x="817" y="500">400 datos inválidos · 429 demasiadas solicitudes</text>
+  <text class="linea" x="817" y="524">503 base no disponible · 500 sin detalles internos</text>
+
+  <text class="nota" x="550" y="582">La interfaz oculta acciones, pero cada control se vuelve a comprobar en el servidor.</text>
+</svg>

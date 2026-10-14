@@ -1,0 +1,262 @@
+{
+  "fecha": "2026-10-09T16:55:09.085Z",
+  "casos": [
+    {
+      "id": "C01",
+      "caso": "Inicio de sesión correcto",
+      "rol": "Analista",
+      "solicitud": "POST /api/auth/login",
+      "esperado": 200,
+      "obtenido": 200,
+      "resultado": "Correcto",
+      "respuesta": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5…",
+        "expiraEn": "30m",
+        "usuario": {
+          "nombre": "Analista de prueba",
+          "correo": "analista@incidentes.local",
+          "rol": "ANALISTA",
+          "permisos": {
+            "consultar": true,
+            "crear": true,
+            "actualizar": false,
+            "eliminar": false
+          }
+        }
+      }
+    },
+    {
+      "id": "C02",
+      "caso": "Contraseña incorrecta",
+      "rol": "Sin sesión",
+      "solicitud": "POST /api/auth/login",
+      "esperado": 401,
+      "obtenido": 401,
+      "resultado": "Correcto",
+      "respuesta": {
+        "error": "Correo o contraseña incorrectos."
+      }
+    },
+    {
+      "id": "C03",
+      "caso": "Acceso sin token",
+      "rol": "Sin sesión",
+      "solicitud": "GET /api/incidentes",
+      "esperado": 401,
+      "obtenido": 401,
+      "resultado": "Correcto",
+      "respuesta": {
+        "error": "Inicia sesión para continuar."
+      },
+      "detalle": {
+        "WWW-Authenticate": "Bearer"
+      }
+    },
+    {
+      "id": "C04",
+      "caso": "Token manipulado (rol cambiado a ADMIN)",
+      "rol": "Analista",
+      "solicitud": "DELETE /api/incidentes/INC-001",
+      "esperado": 401,
+      "obtenido": 401,
+      "resultado": "Correcto",
+      "respuesta": {
+        "error": "La sesión no es válida o venció. Inicia sesión de nuevo."
+      }
+    },
+    {
+      "id": "C05",
+      "caso": "Crear con etiquetas HTML (se limpian)",
+      "rol": "Analista",
+      "solicitud": "POST /api/incidentes",
+      "esperado": 201,
+      "obtenido": 201,
+      "resultado": "Correcto",
+      "respuesta": {
+        "id": "INC-006",
+        "titulo": "Acceso remoto no reconocido",
+        "tipo": "Acceso no autorizado",
+        "fecha": "2026-10-08",
+        "prioridad": "Alta",
+        "estado": "Registrado",
+        "descripcion": "La VPN registró un acceso desde un país no habitual a la cuenta de R&D; la sesión duró > 10 min.",
+        "correo": "redes@example.com",
+        "evidencia": "registro-vpn.png",
+        "createdAt": "2026-10-09T16:55:07.137Z",
+        "updatedAt": "2026-10-09T16:55:07.137Z"
+      },
+      "detalle": {
+        "tituloEnviado": "<b>Acceso remoto</b> no reconocido <script>alert(1)</script>",
+        "tituloGuardado": "Acceso remoto no reconocido"
+      }
+    },
+    {
+      "id": "C06",
+      "caso": "Consultar el incidente creado",
+      "rol": "Supervisor",
+      "solicitud": "GET /api/incidentes/INC-006",
+      "esperado": 200,
+      "obtenido": 200,
+      "resultado": "Correcto",
+      "respuesta": {
+        "id": "INC-006",
+        "titulo": "Acceso remoto no reconocido",
+        "tipo": "Acceso no autorizado",
+        "fecha": "2026-10-08",
+        "prioridad": "Alta",
+        "estado": "Registrado",
+        "descripcion": "La VPN registró un acceso desde un país no habitual a la cuenta de R&D; la sesión duró > 10 min.",
+        "correo": "redes@example.com",
+        "evidencia": "registro-vpn.png",
+        "createdAt": "2026-10-09T16:55:07.137Z",
+        "updatedAt": "2026-10-09T16:55:07.137Z"
+      }
+    },
+    {
+      "id": "C07",
+      "caso": "Permiso insuficiente: eliminar",
+      "rol": "Analista",
+      "solicitud": "DELETE /api/incidentes/INC-006",
+      "esperado": 403,
+      "obtenido": 403,
+      "resultado": "Correcto",
+      "respuesta": {
+        "error": "Tu rol no tiene permiso para esta acción."
+      }
+    },
+    {
+      "id": "C08",
+      "caso": "Permiso insuficiente: crear",
+      "rol": "Supervisor",
+      "solicitud": "POST /api/incidentes",
+      "esperado": 403,
+      "obtenido": 403,
+      "resultado": "Correcto",
+      "respuesta": {
+        "error": "Tu rol no tiene permiso para esta acción."
+      }
+    },
+    {
+      "id": "C09",
+      "caso": "Actualizar el estado",
+      "rol": "Supervisor",
+      "solicitud": "PUT /api/incidentes/INC-006",
+      "esperado": 200,
+      "obtenido": 200,
+      "resultado": "Correcto",
+      "respuesta": {
+        "id": "INC-006",
+        "titulo": "Acceso remoto no reconocido",
+        "tipo": "Acceso no autorizado",
+        "fecha": "2026-10-08",
+        "prioridad": "Alta",
+        "estado": "En revisión",
+        "descripcion": "La VPN registró un acceso desde un país no habitual a la cuenta de R&D; la sesión duró > 10 min.",
+        "correo": "redes@example.com",
+        "evidencia": "registro-vpn.png",
+        "createdAt": "2026-10-09T16:55:07.137Z",
+        "updatedAt": "2026-10-09T16:55:07.188Z"
+      }
+    },
+    {
+      "id": "C10",
+      "caso": "Datos inválidos y campo interno \"rol\"",
+      "rol": "Admin",
+      "solicitud": "POST /api/incidentes",
+      "esperado": 400,
+      "obtenido": 400,
+      "resultado": "Correcto",
+      "respuesta": {
+        "error": "Revisa los datos enviados.",
+        "campos": {
+          "titulo": "Usa entre 5 y 100 caracteres.",
+          "fecha": "La fecha no puede ser futura.",
+          "correo": "El correo de contacto no es válido.",
+          "evidencia": "Usa un archivo PNG, JPG o PDF, sin rutas.",
+          "rol": "Campo no permitido."
+        }
+      }
+    },
+    {
+      "id": "C11",
+      "caso": "Título solo con `<script>`",
+      "rol": "Admin",
+      "solicitud": "POST /api/incidentes",
+      "esperado": 400,
+      "obtenido": 400,
+      "resultado": "Correcto",
+      "respuesta": {
+        "error": "Revisa los datos enviados.",
+        "campos": {
+          "titulo": "Usa entre 5 y 100 caracteres."
+        }
+      }
+    },
+    {
+      "id": "C12",
+      "caso": "Eliminar con rol autorizado",
+      "rol": "Admin",
+      "solicitud": "DELETE /api/incidentes/INC-006",
+      "esperado": 204,
+      "obtenido": 204,
+      "resultado": "Correcto",
+      "respuesta": ""
+    },
+    {
+      "id": "C13",
+      "caso": "Consultar el incidente eliminado",
+      "rol": "Admin",
+      "solicitud": "GET /api/incidentes/INC-006",
+      "esperado": 404,
+      "obtenido": 404,
+      "resultado": "Correcto",
+      "respuesta": {
+        "error": "Incidente no encontrado."
+      }
+    },
+    {
+      "id": "C14",
+      "caso": "CORS: preflight del cliente permitido",
+      "rol": "Navegador",
+      "solicitud": "OPTIONS /api/incidentes",
+      "esperado": 204,
+      "obtenido": 204,
+      "resultado": "Correcto",
+      "respuesta": "",
+      "detalle": {
+        "access-control-allow-headers": "Content-Type,Authorization",
+        "access-control-allow-methods": "GET,POST,PUT,DELETE",
+        "access-control-allow-origin": "http://127.0.0.1:5173",
+        "access-control-expose-headers": "Location",
+        "access-control-max-age": "600"
+      }
+    },
+    {
+      "id": "C15",
+      "caso": "CORS: origen no permitido",
+      "rol": "Navegador",
+      "solicitud": "GET /api/incidentes",
+      "esperado": 403,
+      "obtenido": 403,
+      "resultado": "Correcto",
+      "respuesta": {
+        "error": "Origen no permitido."
+      },
+      "detalle": {
+        "Access-Control-Allow-Origin": "(ausente)"
+      }
+    },
+    {
+      "id": "C16",
+      "caso": "Fuerza bruta: sexto intento fallido",
+      "rol": "Sin sesión",
+      "solicitud": "POST /api/auth/login x6",
+      "esperado": 429,
+      "obtenido": 429,
+      "resultado": "Correcto",
+      "respuesta": {
+        "error": "Demasiados intentos de inicio de sesión. Espera 15 minutos."
+      }
+    }
+  ]
+}
