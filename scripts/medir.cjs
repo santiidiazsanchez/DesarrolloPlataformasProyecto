@@ -2,7 +2,7 @@
 //   node scripts/medir.cjs consulta antes|despues
 //   node scripts/medir.cjs red antes|despues
 //   node scripts/medir.cjs imagen antes|despues
-// Consulta y red usan la base de pruebas (puerto 3308) con 50 000 incidentes; no tocan la base de desarrollo.
+// Consulta y red usan la base de pruebas (puerto 5434) con 50 000 incidentes; no tocan la base de desarrollo.
 require('dotenv').config({ quiet: true });
 const fs = require('node:fs');
 const path = require('node:path');
@@ -76,17 +76,21 @@ async function medirConsulta(prisma) {
     }
     resultados.push({ escenario: nombre, medianaMs: redondear(mediana(tiempos)), p95Ms: redondear(p95(tiempos)) });
   }
-  // Prisma devuelve las columnas de EXPLAIN como f0..f11: 4 = type, 6 = key, 9 = rows, 11 = Extra.
+  // Estadísticas al día después de la carga masiva, para que el plan estime bien las filas.
+  await prisma.$executeRawUnsafe('ANALYZE "Incidente"');
+  // PostgreSQL devuelve el plan como filas de texto en la columna "QUERY PLAN"; la línea con "Scan" dice cómo se leyó la tabla.
   const plan = async (consulta) => {
-    const [fila] = await prisma.$queryRawUnsafe(`EXPLAIN ${consulta}`);
-    const [{ f0: analisis }] = await prisma.$queryRawUnsafe(`EXPLAIN ANALYZE ${consulta}`);
-    return { tipo: fila.f4, indice: fila.f6, filasEstimadas: Number(fila.f9), extra: fila.f11, analisis: analisis.trim().split('\n') };
+    const analisis = (await prisma.$queryRawUnsafe(`EXPLAIN ANALYZE ${consulta}`)).map((fila) => fila['QUERY PLAN']);
+    const lectura = analisis.find((linea) => linea.includes('Scan')) || analisis[0];
+    return { tipo: lectura.replace('->', '').trim().split(' on ')[0].split(' using ')[0], indice: (lectura.match(/using "?(\w+)"?/) || [])[1] || 'ninguno',
+      filasEstimadas: Number((lectura.match(/rows=(\d+)/) || [])[1]), analisis };
   };
   const planes = {
-    conteo: await plan("SELECT COUNT(*) FROM Incidente WHERE prioridad = 'Alta' AND estado = 'Resuelto'"),
-    pagina: await plan("SELECT * FROM Incidente WHERE prioridad = 'Alta' AND estado = 'Resuelto' ORDER BY id LIMIT 10 OFFSET 1990"),
+    conteo: await plan(`SELECT COUNT(*) FROM "Incidente" WHERE prioridad = 'Alta' AND estado = 'Resuelto'`),
+    pagina: await plan(`SELECT * FROM "Incidente" WHERE prioridad = 'Alta' AND estado = 'Resuelto' ORDER BY id LIMIT 10 OFFSET 1990`),
   };
-  const indices = (await prisma.$queryRawUnsafe('SHOW INDEX FROM Incidente')).map((i) => `${i.Key_name}(${i.Column_name})`);
+  const indices = (await prisma.$queryRawUnsafe(`SELECT indexname, indexdef FROM pg_indexes WHERE tablename = 'Incidente' ORDER BY indexname`))
+    .map((i) => `${i.indexname}${i.indexdef.slice(i.indexdef.lastIndexOf('('))}`);
   return { resultados, planes, indices };
 }
 
@@ -149,7 +153,7 @@ async function medirImagen() {
     console.table(datos.resultados);
     return;
   }
-  ejecutar('docker', ['compose', '--profile', 'pruebas', 'up', '-d', '--wait', 'mysql-test']);
+  ejecutar('docker', ['compose', '--profile', 'pruebas', 'up', '-d', '--wait', 'postgres-test']);
   ejecutar(process.execPath, ['node_modules/prisma/build/index.js', 'migrate', 'deploy']);
   const prisma = require('../backend/config/prisma');
   try {

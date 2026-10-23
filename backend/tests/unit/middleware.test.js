@@ -1,5 +1,6 @@
 const { z } = require('zod');
 const errores = require('../../middleware/errores');
+const registro = require('../../middleware/registro');
 const { validarCuerpo } = require('../../middleware/validar');
 
 function respuestaFalsa() {
@@ -36,6 +37,44 @@ describe('manejador de errores', () => {
     const res = manejar(new Error('SELECT * FROM Usuario WHERE clave = 123'));
     expect(res.statusCode).toBe(500);
     expect(JSON.stringify(res.body)).not.toContain('SELECT');
+  });
+  test('el 500 devuelve el id de solicitud y el log solo guarda el tipo del error', () => {
+    const espia = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const res = respuestaFalsa();
+    errores(new Error('SELECT * FROM Usuario WHERE clave = 123'), { id: 'id-de-prueba' }, res, () => {});
+    expect(res.body).toEqual({ error: 'No se pudo completar la solicitud.', id: 'id-de-prueba' });
+    const linea = espia.mock.calls.at(-1)[0];
+    expect(JSON.parse(linea)).toMatchObject({ nivel: 'ERROR', id: 'id-de-prueba', evento: 'error_interno', tipo: 'Error' });
+    expect(linea).not.toContain('SELECT');
+  });
+});
+
+describe('registro de solicitudes', () => {
+  function solicitar(ruta, estado, usuario) {
+    const eventos = {};
+    const req = { method: 'GET', originalUrl: ruta, ip: '203.0.113.7', usuario, headers: { authorization: 'Bearer token-secreto' } };
+    const res = { statusCode: estado, headers: {}, set(nombre, valor) { this.headers[nombre] = valor; }, on(evento, funcion) { eventos[evento] = funcion; } };
+    registro(req, res, () => {});
+    eventos.finish();
+    return { req, res };
+  }
+  test('escribe una línea JSON con nivel, duración e id de solicitud, sin el token', () => {
+    const espia = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const { req, res } = solicitar('/api/incidentes/INC-009', 404, { id: 3, rol: 'ANALISTA' });
+    const linea = espia.mock.calls.at(-1)[0];
+    expect(JSON.parse(linea)).toMatchObject({ nivel: 'WARN', id: req.id, metodo: 'GET', ruta: '/api/incidentes/INC-009', estado: 404, usuario: 3, rol: 'ANALISTA' });
+    expect(typeof JSON.parse(linea).ms).toBe('number');
+    expect(res.headers['X-Request-Id']).toBe(req.id);
+    expect(linea).not.toContain('token-secreto');
+    espia.mockRestore();
+  });
+  test('omite los health checks correctos de Render y registra los fallidos como ERROR', () => {
+    const espia = jest.spyOn(console, 'log').mockImplementation(() => {});
+    solicitar('/api/salud', 200);
+    expect(espia).not.toHaveBeenCalled();
+    solicitar('/api/salud', 503);
+    expect(JSON.parse(espia.mock.calls[0][0]).nivel).toBe('ERROR');
+    espia.mockRestore();
   });
 });
 

@@ -8,18 +8,24 @@ function requerida(nombre) {
   return valor;
 }
 
+requerida('DATABASE_URL');
 const jwtSecret = requerida('JWT_SECRET');
 if (jwtSecret.length < 32) throw new Error('JWT_SECRET debe tener al menos 32 caracteres.');
 
 module.exports = {
   puerto: Number(process.env.PORT || 3001),
+  // En la computadora solo se escucha en 127.0.0.1; en Render HOST=0.0.0.0 para recibir el tráfico de su proxy.
+  host: process.env.HOST || '127.0.0.1',
+  nombre: process.env.NODE_ENV || 'development',
+  // Render define RENDER_GIT_COMMIT: /api/salud muestra qué commit está en línea.
+  version: (process.env.RENDER_GIT_COMMIT || 'local').slice(0, 7),
   jwtSecret,
   jwtDuracion: process.env.JWT_EXPIRES_IN || '30m',
   // Lista separada por comas, por ejemplo: http://127.0.0.1:5173,http://127.0.0.1:4173
   origenesPermitidos: requerida('CLIENT_ORIGIN').split(',').map((origen) => origen.trim()).filter(Boolean),
   limitePorMinuto: Number(process.env.LIMITE_POR_MINUTO || 100),
-  // Solo se activa detrás de un proxy HTTPS real (Nginx, Caddy o el balanceador de la nube).
-  confiarEnProxy: process.env.TRUST_PROXY === '1',
+  // Número de proxies de confianza: 1 en Render. Solo detrás de un proxy HTTPS real; 0 en la computadora.
+  confiarEnProxy: Number(process.env.TRUST_PROXY || 0),
   https: {
     certificado: process.env.HTTPS_CERT && path.resolve(__dirname, '../..', process.env.HTTPS_CERT),
     clave: process.env.HTTPS_KEY && path.resolve(__dirname, '../..', process.env.HTTPS_KEY),

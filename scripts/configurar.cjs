@@ -7,15 +7,21 @@ const clave = () => 'Inc-' + randomBytes(9).toString('base64url');
 
 const raiz = path.join(__dirname, '..');
 const archivo = path.join(raiz, '.env');
-const actual = fs.existsSync(archivo) ? fs.readFileSync(archivo, 'utf8') : '';
+let actual = fs.existsSync(archivo) ? fs.readFileSync(archivo, 'utf8') : '';
+// Un .env de la Unidad 7 (MySQL) se migra: se quitan las variables de MySQL y se crean las de PostgreSQL.
+// JWT_SECRET y las contraseñas de las cuentas de prueba se conservan.
+if (/^DATABASE_URL=.*mysql:\/\//m.test(actual)) {
+  actual = actual.split(/\r?\n/).filter((linea) => !/^(MYSQL_\w+|DATABASE_URL|DATABASE_URL_PRUEBAS|COMPOSE_PROJECT_NAME)=/.test(linea)).join('\n');
+  console.log('.env tenía la configuración de MySQL: se reemplaza por la de PostgreSQL.');
+}
 const existentes = new Set(actual.split(/\r?\n/).map((linea) => linea.split('=')[0].trim()));
-const mysql = randomBytes(24).toString('hex');
+const postgres = randomBytes(24).toString('hex');
+const base = ['COMPOSE_PROJECT_NAME', 'POSTGRES_PASSWORD', 'DATABASE_URL', 'DATABASE_URL_PRUEBAS'];
 const variables = [
-  ['COMPOSE_PROJECT_NAME', `incidentes-u6-${randomBytes(4).toString('hex')}`],
-  ['MYSQL_ROOT_PASSWORD', randomBytes(24).toString('hex')],
-  ['MYSQL_PASSWORD', mysql],
-  ['DATABASE_URL', `"mysql://incidentes_app:${mysql}@127.0.0.1:3307/incidentes_db?connect_timeout=5"`],
-  ['DATABASE_URL_PRUEBAS', `"mysql://incidentes_app:${mysql}@127.0.0.1:3308/incidentes_test?connect_timeout=5"`],
+  ['COMPOSE_PROJECT_NAME', `incidentes-u8-${randomBytes(4).toString('hex')}`],
+  ['POSTGRES_PASSWORD', postgres],
+  ['DATABASE_URL', `"postgresql://incidentes_app:${postgres}@127.0.0.1:5433/incidentes_db?connect_timeout=5"`],
+  ['DATABASE_URL_PRUEBAS', `"postgresql://incidentes_app:${postgres}@127.0.0.1:5434/incidentes_test?connect_timeout=5"`],
   ['PORT', '3001'],
   ['JWT_SECRET', randomBytes(48).toString('base64url')],
   ['JWT_EXPIRES_IN', '30m'],
@@ -24,10 +30,10 @@ const variables = [
   ['CLAVE_SUPERVISOR', clave()],
   ['CLAVE_ANALISTA', clave()],
 ];
-// Si .env ya existe, solo se agregan las variables nuevas: no se cambian las contraseñas de MySQL.
-const faltantes = actual && existentes.has('MYSQL_PASSWORD')
-  ? variables.filter(([nombre]) => !existentes.has(nombre) && !['COMPOSE_PROJECT_NAME', 'MYSQL_ROOT_PASSWORD', 'MYSQL_PASSWORD', 'DATABASE_URL', 'DATABASE_URL_PRUEBAS'].includes(nombre))
-  : variables;
+// Si .env ya tiene la base configurada, solo se agregan las variables nuevas: no se cambian las contraseñas de PostgreSQL.
+const faltantes = existentes.has('POSTGRES_PASSWORD')
+  ? variables.filter(([nombre]) => !existentes.has(nombre) && !base.includes(nombre))
+  : variables.filter(([nombre]) => !existentes.has(nombre));
 if (faltantes.length) {
   const separador = actual && !actual.endsWith('\n') ? '\n' : '';
   fs.writeFileSync(archivo, actual + separador + faltantes.map(([nombre, valor]) => `${nombre}=${valor}`).join('\n') + '\n');

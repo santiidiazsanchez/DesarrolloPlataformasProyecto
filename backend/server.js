@@ -23,8 +23,8 @@ async function iniciar() {
     console.error(error.code === 'EADDRINUSE' ? `El puerto ${entorno.puerto} está ocupado.` : 'No se pudo iniciar la API.');
     prisma.$disconnect(); process.exitCode = 1;
   });
-  servidor.listen(entorno.puerto, '127.0.0.1', () => {
-    console.log(`API de incidentes: ${protocolo}://127.0.0.1:${servidor.address().port}/api/incidentes`);
+  servidor.listen(entorno.puerto, entorno.host, () => {
+    console.log(`API de incidentes (${entorno.nombre}, versión ${entorno.version}): ${protocolo}://${entorno.host}:${servidor.address().port}/api/incidentes`);
   });
   async function cerrar() {
     servidor.close(async () => { await prisma.$disconnect(); });
@@ -33,6 +33,6 @@ async function iniciar() {
   process.once('SIGTERM', cerrar);
 }
 iniciar().catch(async () => {
-  console.error('No se pudo conectar con la base. Revisa .env, Docker y npm run db:migrar.');
+  console.error('No se pudo conectar con la base. Revisa DATABASE_URL, Docker y npm run db:migrar.');
   await prisma.$disconnect(); process.exitCode = 1;
 });

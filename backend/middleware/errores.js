@@ -22,7 +22,8 @@ module.exports = function errores(error, req, res, _next) {
   if (error.status === 400) {
     return res.status(400).json({ error: 'La solicitud no es válida.' });
   }
-  // No imprimir consultas, datos personales ni cadenas de conexión.
-  console.error('Error interno al procesar la solicitud.');
-  res.status(500).json({ error: 'No se pudo completar la solicitud.' });
+  // No imprimir consultas, datos personales ni cadenas de conexión: solo el tipo y el código del error.
+  // El id de solicitud une la respuesta que ve el usuario con esta línea del log.
+  console.error(JSON.stringify({ fecha: new Date().toISOString(), nivel: 'ERROR', id: req.id, evento: 'error_interno', tipo: error.name, codigo: error.code }));
+  res.status(500).json({ error: 'No se pudo completar la solicitud.', ...(req.id && { id: req.id }) });
 };

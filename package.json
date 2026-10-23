@@ -1,5 +1,5 @@
 {
-  "name": "incidentes-unidad-7",
+  "name": "incidentes-unidad-8",
   "version": "1.0.0",
   "private": true,
   "engines": {
@@ -16,14 +16,16 @@
     "test:coverage": "node --experimental-vm-modules --disable-warning=ExperimentalWarning node_modules/jest/bin/jest.js --selectProjects backend frontend --coverage",
     "test:api": "node scripts/probar.cjs",
     "casos": "node scripts/casos.cjs",
+    "produccion": "node --env-file-if-exists=.env.produccion scripts/produccion.cjs",
     "configurar": "node scripts/configurar.cjs",
     "certificado": "node scripts/certificado.cjs",
     "imagen": "node scripts/optimizar-imagen.cjs",
     "medir": "node scripts/medir.cjs",
-    "db:iniciar": "docker compose up -d --wait mysql",
+    "db:iniciar": "docker compose up -d --wait postgres",
     "db:generar": "prisma generate",
     "db:migrar": "prisma migrate deploy",
     "db:ejemplos": "node prisma/seed.cjs",
+    "db:produccion": "node --env-file=.env.produccion node_modules/prisma/build/index.js migrate deploy && node --env-file=.env.produccion prisma/seed.cjs",
     "db:ver": "prisma studio --browser none --hostname 127.0.0.1",
     "lint": "eslint ."
   },

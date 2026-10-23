@@ -1,0 +1,133 @@
+# CI/CD de la plataforma de incidentes (Unidad 8).
+# Cada push o pull request a main: lint, pruebas unitarias, build y pruebas de integración con PostgreSQL.
+# Solo si todo pasa y es un push a main: Actions ordena el despliegue en Render y verifica producción.
+name: CI/CD plataforma de incidentes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# El token de GitHub solo puede leer el código.
+permissions:
+  contents: read
+
+# Un push nuevo cancela las pruebas pendientes de un pull request; en main no se corta un despliegue a la mitad.
+concurrency:
+  group: ci-cd-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  calidad:
+    name: Lint, pruebas unitarias y build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v5
+      - name: Instalar Node.js (versión de .node-version, la misma de Render)
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Instalar dependencias exactas de package-lock.json
+        run: npm ci
+      - name: ESLint
+        run: npm run lint
+      - name: Pruebas unitarias (backend y cliente)
+        run: npm test
+      - name: Construir el cliente
+        run: npm run build
+        env:
+          VITE_API_URL: https://api.example.invalid/api
+
+  integracion:
+    name: Pruebas de integración con PostgreSQL
+    runs-on: ubuntu-latest
+    # Base temporal, solo para estas pruebas: se destruye al terminar y nunca toca producción.
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: incidentes_test
+          POSTGRES_USER: incidentes_app
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd "pg_isready -U incidentes_app -d incidentes_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL_PRUEBAS: postgresql://incidentes_app:postgres@127.0.0.1:5434/incidentes_test?connect_timeout=5
+      CLIENT_ORIGIN: http://127.0.0.1:5173,http://127.0.0.1:4173
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v5
+      - name: Instalar Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Generar la clave JWT y las contraseñas de esta ejecución
+        # Valores aleatorios y ocultos en el log: el repositorio no guarda ninguna clave.
+        run: |
+          for nombre in JWT_SECRET CLAVE_ADMIN CLAVE_SUPERVISOR CLAVE_ANALISTA; do
+            valor="Inc-$(openssl rand -hex 24)"
+            echo "::add-mask::$valor"
+            echo "$nombre=$valor" >> "$GITHUB_ENV"
+          done
+      - name: Pruebas de integración (CRUD, autenticación, roles, CORS, límites y caída de la base)
+        run: npm run test:api
+        env:
+          CONTENEDOR_PRUEBAS: ${{ job.services.postgres.id }}
+
+  despliegue:
+    name: Desplegar en Render
+    needs: [calidad, integracion]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      desplegado: ${{ steps.hooks.outputs.desplegado }}
+    steps:
+      - name: Llamar a los Deploy Hooks de la API y del cliente
+        id: hooks
+        env:
+          HOOK_API: ${{ secrets.RENDER_DEPLOY_HOOK_API }}
+          HOOK_WEB: ${{ secrets.RENDER_DEPLOY_HOOK_WEB }}
+        run: |
+          if [ -z "$HOOK_API" ] || [ -z "$HOOK_WEB" ]; then
+            echo "::warning::Faltan los secretos RENDER_DEPLOY_HOOK_API o RENDER_DEPLOY_HOOK_WEB. Se omite el despliegue."
+            exit 0
+          fi
+          curl -fsS -X POST "$HOOK_API" > /dev/null
+          curl -fsS -X POST "$HOOK_WEB" > /dev/null
+          echo "desplegado=true" >> "$GITHUB_OUTPUT"
+          echo "Render recibió el despliegue del commit ${GITHUB_SHA::7}."
+
+  verificacion:
+    name: Verificar producción
+    needs: despliegue
+    if: needs.despliegue.outputs.desplegado == 'true'
+    runs-on: ubuntu-latest
+    env:
+      API_URL: ${{ vars.API_URL }}
+      WEB_URL: ${{ vars.WEB_URL }}
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v5
+      - name: Instalar Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+      - name: Esperar el nuevo commit en /api/salud y ejecutar los casos públicos
+        # Sin cuentas: salud, HTTPS, HSTS, CORS, token ausente o sin firma, login incorrecto y errores 400/404.
+        run: |
+          if [ -z "$API_URL" ] || [ -z "$WEB_URL" ]; then
+            echo "::warning::Faltan las variables API_URL o WEB_URL del repositorio. Se omite la verificación."
+            exit 0
+          fi
+          node scripts/produccion.cjs --esperar "$GITHUB_SHA"

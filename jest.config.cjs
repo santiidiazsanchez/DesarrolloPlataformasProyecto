@@ -1,7 +1,7 @@
 // Tres grupos de pruebas con Jest:
 // - backend: reglas del negocio sin base de datos (npm test).
 // - frontend: servicios del cliente React; Babel convierte sus módulos ES (npm test).
-// - api: integración con MySQL de pruebas en Docker (npm run test:api).
+// - api: integración con PostgreSQL de pruebas en Docker o en GitHub Actions (npm run test:api).
 // Los scripts usan --experimental-vm-modules porque sanitize-html depende de htmlparser2, que solo se publica como ESM.
 const babel = ['babel-jest', { presets: [['@babel/preset-env', { targets: { node: 'current' } }]] }];
 
@@ -30,7 +30,7 @@ module.exports = {
   // Rutas, controladores y app.js se recorren en las pruebas de integración (npm run test:api).
   collectCoverageFrom: [
     'backend/services/**/*.js', 'backend/validaciones/**/*.js', 'backend/utils/**/*.js', 'backend/config/permisos.js',
-    'backend/middleware/{errores,validar,autenticacion}.js', 'frontend/src/services/api.js',
+    'backend/middleware/{errores,validar,autenticacion,registro}.js', 'frontend/src/services/api.js',
   ],
   coverageReporters: ['text', 'text-summary', 'html'],
 };

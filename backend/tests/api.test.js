@@ -38,7 +38,7 @@ beforeAll(async () => {
   await prisma.incidente.deleteMany();
   await prisma.usuario.deleteMany();
   // Reiniciar el contador solo en la base exclusiva de pruebas.
-  await prisma.$executeRaw`ALTER TABLE Incidente AUTO_INCREMENT = 1`;
+  await prisma.$executeRaw`ALTER SEQUENCE "Incidente_id_seq" RESTART WITH 1`;
   const sembrado = spawnSync(process.execPath, ['prisma/seed.cjs'], { env: process.env });
   assert.equal(sembrado.status, 0);
   servidor = app.listen(0, '127.0.0.1');
@@ -196,6 +196,14 @@ test('Helmet agrega encabezados de seguridad, oculta X-Powered-By y evita la cac
   assert.equal(respuesta.headers.get('x-content-type-options'), 'nosniff');
   assert.match(respuesta.headers.get('strict-transport-security'), /max-age=/);
   assert.match(respuesta.headers.get('content-security-policy'), /default-src 'self'/);
+});
+
+test('salud confirma la base y cada respuesta lleva un id de solicitud distinto', async () => {
+  const primera = await fetch(`${base}/salud`);
+  const segunda = await fetch(`${base}/salud`);
+  igual(await primera.json(), { estado: 'ok', baseDeDatos: 'conectada', version: 'local', entorno: 'test' });
+  assert.match(primera.headers.get('x-request-id'), /^[0-9a-f-]{36}$/);
+  assert.notEqual(primera.headers.get('x-request-id'), segunda.headers.get('x-request-id'));
 });
 
 // ---------- Validación y limpieza ----------
@@ -373,9 +381,9 @@ test('título duplicado recibe 409 con el campo titulo y los ids inválidos reci
 });
 
 test('la base impide nulos y valores fuera del enum', async () => {
-  await assert.rejects(prisma.$executeRaw`UPDATE Incidente SET titulo = NULL WHERE id = 1`);
-  await assert.rejects(prisma.$executeRaw`UPDATE Incidente SET prioridad = 'Urgente' WHERE id = 1`);
-  await assert.rejects(prisma.$executeRaw`UPDATE Usuario SET rol = 'ROOT' WHERE correo = 'admin@incidentes.local'`);
+  await assert.rejects(prisma.$executeRaw`UPDATE "Incidente" SET titulo = NULL WHERE id = 1`);
+  await assert.rejects(prisma.$executeRaw`UPDATE "Incidente" SET prioridad = 'Urgente' WHERE id = 1`);
+  await assert.rejects(prisma.$executeRaw`UPDATE "Usuario" SET rol = 'ROOT' WHERE correo = 'admin@incidentes.local'`);
   assert.equal((await prisma.incidente.findUnique({ where: { id: 1 } })).prioridad, 'Alta');
 });
 
@@ -431,18 +439,25 @@ test('cinco intentos fallidos bloquean el inicio de sesión con 429', async () =
   assert.equal((await iniciarSesion(...cuentas.admin)).status, 429);
 });
 
-test('MySQL detenido devuelve 503 sin secretos ni consultas', async () => {
-  const apagado = spawnSync('docker', ['compose', 'stop', 'mysql-test'], { stdio: 'ignore' });
+test('PostgreSQL detenido devuelve 503 sin secretos ni consultas', async () => {
+  // En GitHub Actions la base es un contenedor de servicio: el workflow entrega su id.
+  const contenedor = process.env.CONTENEDOR_PRUEBAS;
+  const apagado = spawnSync('docker', contenedor ? ['stop', contenedor] : ['compose', 'stop', 'postgres-test'], { stdio: 'ignore' });
   assert.equal(apagado.status, 0);
   const respuesta = await fetch(url, conToken());
   assert.equal(respuesta.status, 503);
   igual(await respuesta.json(), { error: 'La base de datos no está disponible. Intenta de nuevo.' });
+  // El health check también lo detecta: Render deja de enviar tráfico a una instancia sin base.
+  const salud = await fetch(`${base}/salud`);
+  assert.equal(salud.status, 503);
+  expect(await salud.json()).toMatchObject({ estado: 'error', baseDeDatos: 'sin conexión' });
 });
 
 test('al superar el límite por minuto la API responde 429', async () => {
   let respuesta;
+  // Sin token la API responde 401 sin consultar la base, que en este punto ya está detenida.
   for (let intento = 0; intento <= Number(process.env.LIMITE_POR_MINUTO); intento++) {
-    respuesta = await fetch(`${base}/salud`);
+    respuesta = await fetch(url);
     if (respuesta.status === 429) break;
   }
   assert.equal(respuesta.status, 429);

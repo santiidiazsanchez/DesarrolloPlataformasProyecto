@@ -1,9 +1,22 @@
-// Registro de cada solicitud con el usuario que la hizo. No se imprimen cuerpos,
-// contraseñas ni tokens: solo método, ruta, código y el id y rol del usuario.
+const { randomUUID } = require('node:crypto');
+
+// Una línea JSON por solicitud, que Render muestra en Logs. No se imprimen cuerpos,
+// contraseñas ni tokens: solo método, ruta, código, duración y el id y rol del usuario.
+// El id de solicitud también va en X-Request-Id para encontrar en el log lo que vio el usuario.
 module.exports = function registro(req, res, next) {
+  const inicio = process.hrtime.bigint();
+  req.id = randomUUID();
+  res.set('X-Request-Id', req.id);
   res.on('finish', () => {
-    const quien = req.usuario ? ` usuario=${req.usuario.id} rol=${req.usuario.rol}` : '';
-    console.log(`${new Date().toISOString()} ${req.method} ${req.originalUrl} ${res.statusCode}${quien}`);
+    // Render consulta /api/salud cada pocos segundos: solo se registra cuando falla.
+    if (req.originalUrl === '/api/salud' && res.statusCode === 200) return;
+    const nivel = res.statusCode >= 500 ? 'ERROR' : res.statusCode >= 400 ? 'WARN' : 'INFO';
+    const linea = {
+      fecha: new Date().toISOString(), nivel, id: req.id, ip: req.ip, metodo: req.method, ruta: req.originalUrl,
+      estado: res.statusCode, ms: Math.round(Number(process.hrtime.bigint() - inicio) / 1e5) / 10,
+    };
+    if (req.usuario) Object.assign(linea, { usuario: req.usuario.id, rol: req.usuario.rol });
+    console.log(JSON.stringify(linea));
   });
   next();
 };

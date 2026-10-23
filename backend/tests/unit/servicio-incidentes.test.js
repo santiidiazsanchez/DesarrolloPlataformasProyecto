@@ -1,4 +1,4 @@
-// El servicio se prueba sin MySQL: el modelo se reemplaza por funciones simuladas.
+// El servicio se prueba sin base de datos: el modelo se reemplaza por funciones simuladas.
 jest.mock('../../models/incidentes');
 const modelo = require('../../models/incidentes');
 const servicio = require('../../services/incidentes');

@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const compression = require('compression');
 const entorno = require('./config/entorno');
+const rutasSalud = require('./routes/salud');
 const rutasAuth = require('./routes/auth');
 const rutasIncidentes = require('./routes/incidentes');
 const registro = require('./middleware/registro');
@@ -11,7 +12,7 @@ const { limiteGeneral } = require('./middleware/limites');
 
 const app = express();
 // Detrás de un proxy HTTPS, Express toma la IP y el protocolo reales de X-Forwarded-*.
-if (entorno.confiarEnProxy) app.set('trust proxy', 1);
+if (entorno.confiarEnProxy) app.set('trust proxy', entorno.confiarEnProxy);
 
 app.use(registro);
 // Encabezados seguros y sin X-Powered-By.
@@ -35,7 +36,7 @@ app.use(compression({ threshold: 1024 }));
 app.use('/api', (req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
 app.use(express.json({ limit: '100kb' }));
 
-app.get('/api/salud', (req, res) => res.json({ estado: 'ok' }));
+app.use('/api/salud', rutasSalud);
 app.use('/api/auth', rutasAuth);
 app.use('/api/incidentes', rutasIncidentes);
 app.use((req, res) => res.status(404).json({ error: 'Ruta no encontrada.' }));

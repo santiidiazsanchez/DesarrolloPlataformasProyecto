@@ -1,9 +1,9 @@
-// Traducciones entre lo que ve el cliente y lo que guarda MySQL, en un solo lugar.
-const MAXIMO_ID = 2147483647; // INT de MySQL
+// Traducciones entre lo que ve el cliente y lo que guarda la base, en un solo lugar.
+const MAXIMO_ID = 2147483647; // INTEGER de PostgreSQL
 
 /**
  * Convierte el id numérico de la base en el código que muestra la interfaz.
- * @param {number} id Id de MySQL.
+ * @param {number} id Id de la base.
  * @returns {string} Código con al menos tres dígitos, por ejemplo INC-004.
  */
 function aCodigo(id) {
@@ -22,7 +22,7 @@ function desdeCodigo(codigo) {
   return valido ? numero : null;
 }
 
-// MySQL no admite espacios ni tildes en los valores del enum de Prisma: "En revisión" se guarda como En_revision.
+// Prisma no admite espacios ni tildes en los nombres de un enum: el código usa En_revision y la base guarda "En revisión".
 const estadoABase = (estado) => (estado === 'En revisión' ? 'En_revision' : estado);
 const estadoDesdeBase = (estado) => (estado === 'En_revision' ? 'En revisión' : estado);
 

@@ -1,4 +1,4 @@
-// autenticar se prueba sin MySQL: el modelo de usuarios se reemplaza.
+// autenticar se prueba sin base de datos: el modelo de usuarios se reemplaza.
 jest.mock('../../models/usuarios');
 const usuarios = require('../../models/usuarios');
 const { autenticar } = require('../../middleware/autenticacion');
