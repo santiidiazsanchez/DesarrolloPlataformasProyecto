@@ -20,6 +20,12 @@ Revisión del 13 de octubre de 2026 con el agente auditor (Claude Code) aplicand
 
 Las tres pruebas fallaron antes de la corrección (4 casos en rojo) y pasaron después.
 
+Pasos para reproducir (datos de `npm run db:ejemplos`, DevTools abierto en Network):
+
+1. Iniciar sesión como analista y registrar un incidente con el título "Correo que suplanta a soporte técnico", que ya existe. Esperado: el campo Título marcado. Obtenido: 409 con solo `error` y ningún campo marcado.
+2. Iniciar sesión como administrador, cambiar su rol a `ANALISTA` en la base (`npm run db:ver`) y pulsar Eliminar en INC-004. Esperado: la vista se ajusta al rol nuevo. Obtenido: 403 y el botón sigue visible. En Sources, breakpoint en el `catch` de `eliminar` (App.jsx:118) y Watch `usuario.permisos.eliminar`.
+3. Iniciar sesión como analista, llenar el formulario y reemplazar el token de `sessionStorage` por uno vencido (firmado con la misma clave, para no esperar 30 minutos). Enviar y volver a iniciar sesión. Esperado: recuperar lo escrito. Obtenido: 401 y el formulario vacío.
+
 ## Otros hallazgos
 
 - ESLint: parámetro `next` sin usar, dependencia faltante en un `useEffect`, seis `import React` innecesarios, una variable de `catch` sin usar y una desestructuración para quitar `id` (se justificó `ignoreRestSiblings`). Resultado: 0 problemas en 52 archivos.

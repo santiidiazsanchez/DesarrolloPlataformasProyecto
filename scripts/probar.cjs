@@ -14,6 +14,7 @@ function ejecutar(programa, argumentos) {
 try {
   ejecutar('docker', ['compose', '--profile', 'pruebas', 'up', '-d', '--wait', 'mysql-test']);
   ejecutar(process.execPath, ['node_modules/prisma/build/index.js', 'migrate', 'deploy']);
-  ejecutar(process.execPath, ['--experimental-vm-modules', '--disable-warning=ExperimentalWarning', 'node_modules/jest/bin/jest.js', '--selectProjects', 'api', '--runInBand', ...process.argv.slice(2)]);
+  // --silent: oculta el registro de cada solicitud (cientos de líneas); el resultado de cada prueba sí se muestra.
+  ejecutar(process.execPath, ['--experimental-vm-modules', '--disable-warning=ExperimentalWarning', 'node_modules/jest/bin/jest.js', '--selectProjects', 'api', '--runInBand', '--silent', ...process.argv.slice(2)]);
 } catch (error) { console.error(error.message); process.exitCode = 1; }
 finally { spawnSync('docker', ['compose', 'stop', 'mysql-test'], { stdio: 'ignore' }); }
