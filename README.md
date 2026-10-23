@@ -1,5 +1,9 @@
 # Incidentes — Tarea 8
 
+En línea: https://incidentes-web-0eqn.onrender.com (API: https://incidentes-api-xqiw.onrender.com/api/salud).
+Cada push a `main` pasa por GitHub Actions y, si las pruebas pasan, se despliega en Render.
+Documentación técnica, API, pruebas y manual de usuario: carpeta [`docs/`](docs/README.md).
+
 Requisitos: Node.js 24.9 o superior y Docker Desktop encendido.
 
 Primera vez, desde esta carpeta:
@@ -39,9 +43,11 @@ npm run lint
 
 Mediciones: `npm run medir -- consulta antes` (también `red` o `imagen`, y `despues`).
 
+Producción: `npm run produccion` prueba la URL pública (lee `.env.produccion`, que no se sube).
+
 Backend: routes → controllers → services → models.
 
 Para volver a trabajar: `npm run db:iniciar` y `npm run dev`.
 Para detener PostgreSQL: `docker compose stop postgres`. El volumen conserva los datos.
 
-Entrega: excluye `.env`, `frontend/.env`, `certificados`, `coverage`, `node_modules`, `.git`, `frontend/dist` y tareas anteriores.
+Entrega: excluye `.env`, `.env.produccion`, `frontend/.env`, `certificados`, `coverage`, `node_modules`, `.git`, `frontend/dist` y tareas anteriores.

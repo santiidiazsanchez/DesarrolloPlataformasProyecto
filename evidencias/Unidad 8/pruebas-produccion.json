@@ -1,0 +1,196 @@
+{
+  "api": "https://incidentes-api-xqiw.onrender.com/api",
+  "web": "https://incidentes-web-0eqn.onrender.com",
+  "version": "d17f6a1",
+  "casos": [
+    {
+      "id": "P01",
+      "caso": "Health check con la base conectada",
+      "solicitud": "GET /api/salud",
+      "esperado": "200",
+      "obtenido": 200,
+      "correcto": true,
+      "detalle": "versión d17f6a1, 436 ms"
+    },
+    {
+      "id": "P02",
+      "caso": "HTTP redirige a HTTPS",
+      "solicitud": "GET http://…/api/salud",
+      "esperado": "301 o 302 o 307 o 308",
+      "obtenido": 301,
+      "correcto": true,
+      "detalle": ""
+    },
+    {
+      "id": "P03",
+      "caso": "HSTS y encabezados de Helmet",
+      "solicitud": "GET /api/salud",
+      "esperado": "200",
+      "obtenido": 200,
+      "correcto": true,
+      "detalle": "max-age=31536000; includeSubDomains"
+    },
+    {
+      "id": "P04",
+      "caso": "El cliente React carga por HTTPS con CSP",
+      "solicitud": "GET / (sitio)",
+      "esperado": "200",
+      "obtenido": 200,
+      "correcto": true,
+      "detalle": ""
+    },
+    {
+      "id": "P05",
+      "caso": "CORS acepta el dominio del cliente",
+      "solicitud": "OPTIONS /api/incidentes",
+      "esperado": "204",
+      "obtenido": 204,
+      "correcto": true,
+      "detalle": ""
+    },
+    {
+      "id": "P06",
+      "caso": "CORS rechaza otro dominio",
+      "solicitud": "GET /api/incidentes con Origin externo",
+      "esperado": "403",
+      "obtenido": 403,
+      "correcto": true,
+      "detalle": ""
+    },
+    {
+      "id": "P07",
+      "caso": "Acceso sin token",
+      "solicitud": "GET /api/incidentes",
+      "esperado": "401",
+      "obtenido": 401,
+      "correcto": true,
+      "detalle": ""
+    },
+    {
+      "id": "P08",
+      "caso": "Token sin firma (alg none) con rol ADMIN",
+      "solicitud": "DELETE /api/incidentes/INC-001",
+      "esperado": "401",
+      "obtenido": 401,
+      "correcto": true,
+      "detalle": ""
+    },
+    {
+      "id": "P09",
+      "caso": "Contraseña incorrecta",
+      "solicitud": "POST /api/auth/login",
+      "esperado": "401",
+      "obtenido": 401,
+      "correcto": true,
+      "detalle": ""
+    },
+    {
+      "id": "P10",
+      "caso": "JSON mal formado",
+      "solicitud": "POST /api/auth/login",
+      "esperado": "400",
+      "obtenido": 400,
+      "correcto": true,
+      "detalle": ""
+    },
+    {
+      "id": "P11",
+      "caso": "Ruta inexistente",
+      "solicitud": "GET /api/no-existe",
+      "esperado": "404",
+      "obtenido": 404,
+      "correcto": true,
+      "detalle": ""
+    },
+    {
+      "id": "P12",
+      "caso": "Inicio de sesión de las tres cuentas",
+      "solicitud": "POST /api/auth/login",
+      "esperado": "200",
+      "obtenido": 200,
+      "correcto": true,
+      "detalle": ""
+    },
+    {
+      "id": "P13",
+      "caso": "El analista lista los incidentes",
+      "solicitud": "GET /api/incidentes",
+      "esperado": "200",
+      "obtenido": 200,
+      "correcto": true,
+      "detalle": "3 registros"
+    },
+    {
+      "id": "P14",
+      "caso": "El analista registra un incidente",
+      "solicitud": "POST /api/incidentes",
+      "esperado": "201",
+      "obtenido": 201,
+      "correcto": true,
+      "detalle": "INC-007"
+    },
+    {
+      "id": "P15",
+      "caso": "Datos inválidos: fecha futura, correo y HTML",
+      "solicitud": "POST /api/incidentes",
+      "esperado": "400",
+      "obtenido": 400,
+      "correcto": true,
+      "detalle": "titulo, fecha, correo"
+    },
+    {
+      "id": "P16",
+      "caso": "Título repetido",
+      "solicitud": "POST /api/incidentes",
+      "esperado": "409",
+      "obtenido": 409,
+      "correcto": true,
+      "detalle": ""
+    },
+    {
+      "id": "P17",
+      "caso": "Rol insuficiente: el analista intenta eliminar",
+      "solicitud": "DELETE /api/incidentes/INC-007",
+      "esperado": "403",
+      "obtenido": 403,
+      "correcto": true,
+      "detalle": ""
+    },
+    {
+      "id": "P18",
+      "caso": "El supervisor cambia el estado",
+      "solicitud": "PUT /api/incidentes/INC-007",
+      "esperado": "200",
+      "obtenido": 200,
+      "correcto": true,
+      "detalle": ""
+    },
+    {
+      "id": "P19",
+      "caso": "El cambio persiste en una nueva consulta",
+      "solicitud": "GET /api/incidentes/INC-007",
+      "esperado": "200",
+      "obtenido": 200,
+      "correcto": true,
+      "detalle": ""
+    },
+    {
+      "id": "P20",
+      "caso": "El administrador elimina el incidente",
+      "solicitud": "DELETE /api/incidentes/INC-007",
+      "esperado": "204",
+      "obtenido": 204,
+      "correcto": true,
+      "detalle": ""
+    },
+    {
+      "id": "P21",
+      "caso": "El incidente eliminado ya no existe",
+      "solicitud": "GET /api/incidentes/INC-007",
+      "esperado": "404",
+      "obtenido": 404,
+      "correcto": true,
+      "detalle": ""
+    }
+  ]
+}

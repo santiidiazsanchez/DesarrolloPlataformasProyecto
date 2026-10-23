@@ -1,0 +1,15 @@
+Persistencia después de reiniciar el servicio en Render (23 de octubre de 2026, horas en UTC)
+
+20:18:19  El analista registra INC-006 "Prueba de persistencia en producción" (POST 201, captura 21 y log 23b).
+20:20:09  El supervisor cambia el estado a "En revisión" (PUT 200, captura 22 y log 23b).
+20:21:01  Render → Manual Deploy → Restart service (log 23b: "Running 'npm run db:migrar && npm start'", captura 24c).
+
+Consulta posterior al reinicio, con la cuenta del analista:
+
+GET /api/salud            → 200 {"estado":"ok","baseDeDatos":"conectada","version":"d17f6a1"}
+GET /api/incidentes/INC-006 → 200
+  estado:     En revisión
+  createdAt:  2026-10-23T20:18:19.498Z
+  updatedAt:  2026-10-23T20:20:09.059Z
+
+El registro y su último cambio siguen en PostgreSQL aunque el proceso de Node se reinició.

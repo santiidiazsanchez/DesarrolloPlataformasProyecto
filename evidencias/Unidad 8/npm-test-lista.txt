@@ -1,0 +1,96 @@
+npm test (unitarias: backend y cliente)
+Fecha: 2026-10-23 · commit d17f6a1
+
+frontend/src/services/api.test.js
+  ✔ solicitudes autenticadas › envía el token como Bearer y la URL configurada
+  ✔ solicitudes autenticadas › un 401 con sesión borra el token y avisa que la sesión venció
+  ✔ solicitudes autenticadas › un error de red se explica sin detalles técnicos
+  ✔ solicitudes autenticadas › los errores de validación conservan el mensaje de cada campo
+  ✔ permisos que cambian durante la sesión › un 403 con sesión avisa para volver a leer los permisos
+  ✔ borrador cuando la sesión vence al guardar › conserva los datos y los devuelve a la misma cuenta después de iniciar sesión
+  ✔ borrador cuando la sesión vence al guardar › no entrega el borrador a otra cuenta
+  ✔ inicio de sesión › guarda el token recibido y devuelve el usuario
+  ✔ inicio de sesión › sin token no se recupera ningún borrador
+
+backend/tests/unit/servicio-incidentes.test.js
+  ✔ códigos INC y estados › aCodigo y desdeCodigo son inversos
+  ✔ códigos INC y estados › rechaza el código "abc"
+  ✔ códigos INC y estados › rechaza el código "INC-0"
+  ✔ códigos INC y estados › rechaza el código "INC-1"
+  ✔ códigos INC y estados › rechaza el código "INC-1.5"
+  ✔ códigos INC y estados › rechaza el código "INC-004 "
+  ✔ códigos INC y estados › rechaza el código "INC-99999999999"
+  ✔ códigos INC y estados › rechaza el código undefined
+  ✔ códigos INC y estados › "En revisión" se guarda como En_revision y vuelve igual
+  ✔ servicio de incidentes › lista con los valores por defecto: página 1 y 10 registros
+  ✔ servicio de incidentes › convierte la paginación recibida como texto en números
+  ✔ servicio de incidentes › rechaza la consulta { prioridad: 'Urgente' } sin llegar a la base
+  ✔ servicio de incidentes › rechaza la consulta { estado: 'Cerrado' } sin llegar a la base
+  ✔ servicio de incidentes › rechaza la consulta { prioridad: [ 'Alta', 'Baja', [length]: 2 ] } sin llegar a la base
+  ✔ servicio de incidentes › rechaza la consulta { pagina: '0' } sin llegar a la base
+  ✔ servicio de incidentes › rechaza la consulta { limite: '100' } sin llegar a la base
+  ✔ servicio de incidentes › consultar un código inexistente responde 404
+  ✔ servicio de incidentes › un código mal formado responde 400 en consultar, actualizar y eliminar
+  ✔ servicio de incidentes › actualizar y eliminar envían al modelo el id numérico
+  ✔ servicio de incidentes: casos exitosos › consultar devuelve el incidente del modelo
+  ✔ servicio de incidentes: casos exitosos › crear entrega al modelo los datos ya validados
+
+backend/tests/unit/validaciones.test.js
+  ✔ limpiarTexto › retira etiquetas y el contenido de <script>, y une espacios repetidos
+  ✔ limpiarTexto › conserva caracteres de texto como &, < y > (no deja entidades HTML)
+  ✔ esquemaIncidente: reglas del registro › acepta un incidente completo y agrega evidencia vacía por defecto
+  ✔ esquemaIncidente: reglas del registro › limpia el título y el correo antes de validar
+  ✔ esquemaIncidente: reglas del registro › un título formado solo por un script queda vacío y se rechaza
+  ✔ esquemaIncidente: reglas del registro › rechaza una etiqueta escrita como entidad HTML
+  ✔ esquemaIncidente: reglas del registro › rechaza la fecha 2026-02-30
+  ✔ esquemaIncidente: reglas del registro › rechaza la fecha 2999-01-01
+  ✔ esquemaIncidente: reglas del registro › rechaza la evidencia "virus.exe"
+  ✔ esquemaIncidente: reglas del registro › rechaza la evidencia "../../etc/captura.png"
+  ✔ esquemaIncidente: reglas del registro › rechaza la evidencia "carpeta\captura.png"
+  ✔ esquemaIncidente: reglas del registro › rechaza la evidencia "sin-extension"
+  ✔ esquemaIncidente: reglas del registro › acepta la evidencia "captura.PNG"
+  ✔ esquemaIncidente: reglas del registro › acepta la evidencia "foto.jpeg"
+  ✔ esquemaIncidente: reglas del registro › acepta la evidencia "informe.pdf"
+  ✔ esquemaIncidente: reglas del registro › acepta la evidencia ""
+  ✔ esquemaIncidente: reglas del registro › rechaza campos internos como rol o id
+  ✔ esquemaIncidente: reglas del registro › valida tipo, prioridad y estado contra las listas permitidas
+  ✔ esquemaIncidente: reglas del registro › la descripción necesita entre 30 y 1000 caracteres
+  ✔ esquemaLogin › normaliza el correo a minúsculas
+  ✔ esquemaLogin › rechaza contraseñas de más de 72 bytes (límite de bcrypt)
+
+backend/tests/unit/autenticar.test.js
+  ✔ autenticar › sin un token Bearer (undefined) responde 401 con WWW-Authenticate
+  ✔ autenticar › sin un token Bearer ("Basic abc") responde 401 con WWW-Authenticate
+  ✔ autenticar › sin un token Bearer ("Bearer") responde 401 con WWW-Authenticate
+  ✔ autenticar › un token mal firmado responde 401 sin consultar la base
+  ✔ autenticar › una cuenta desactivada responde 401 aunque el token sea válido
+  ✔ autenticar › usa el rol actual de la base, no el que quedó en el token
+
+backend/tests/unit/seguridad.test.js
+  ✔ permisos por rol (menor privilegio) › ANALISTA
+  ✔ permisos por rol (menor privilegio) › SUPERVISOR
+  ✔ permisos por rol (menor privilegio) › ADMIN
+  ✔ permisos por rol (menor privilegio) › DESCONOCIDO
+  ✔ permisos por rol (menor privilegio) › permitir deja pasar un rol autorizado
+  ✔ permisos por rol (menor privilegio) › permitir responde 403 sin llamar al controlador
+  ✔ token JWT › lleva solo id y rol, y dura 30 minutos
+  ✔ token JWT › rechaza un token sin firma (alg none)
+  ✔ token JWT › rechaza un token vencido
+
+backend/tests/unit/middleware.test.js
+  ✔ manejador de errores › un título repetido (P2002) responde 409 e indica el campo titulo
+  ✔ manejador de errores › { code: 'P2025' } responde 404
+  ✔ manejador de errores › { code: 'P1001' } responde 503
+  ✔ manejador de errores › { type: 'entity.parse.failed' } responde 400
+  ✔ manejador de errores › { type: 'entity.too.large' } responde 413
+  ✔ manejador de errores › { status: 415 } responde 415
+  ✔ manejador de errores › { tipo: 'cors' } responde 403
+  ✔ manejador de errores › un error inesperado responde 500 sin detalles internos
+  ✔ manejador de errores › el 500 devuelve el id de solicitud y el log solo guarda el tipo del error
+  ✔ registro de solicitudes › escribe una línea JSON con nivel, duración e id de solicitud, sin el token
+  ✔ registro de solicitudes › omite los health checks correctos de Render y registra los fallidos como ERROR
+  ✔ validarCuerpo › 400 con un mensaje por campo, en el orden del esquema
+  ✔ validarCuerpo › una clave __proto__ queda como propiedad propia y no contamina objetos
+  ✔ validarCuerpo › si los datos son válidos reemplaza req.body por los datos limpios y continúa
+
+Resultado: 80 de 80 pruebas aprobadas en 6 archivos.
