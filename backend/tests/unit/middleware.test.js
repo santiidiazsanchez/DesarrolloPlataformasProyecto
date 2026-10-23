@@ -66,6 +66,8 @@ describe('registro de solicitudes', () => {
     expect(typeof JSON.parse(linea).ms).toBe('number');
     expect(res.headers['X-Request-Id']).toBe(req.id);
     expect(linea).not.toContain('token-secreto');
+    // La cadena de proxies solo se registra con DEPURAR_IP=1.
+    expect(JSON.parse(linea)).not.toHaveProperty('proxies');
     espia.mockRestore();
   });
   test('omite los health checks correctos de Render y registra los fallidos como ERROR', () => {

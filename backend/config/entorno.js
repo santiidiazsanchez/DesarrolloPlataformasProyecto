@@ -26,6 +26,8 @@ module.exports = {
   limitePorMinuto: Number(process.env.LIMITE_POR_MINUTO || 100),
   // Número de proxies de confianza: 1 en Render. Solo detrás de un proxy HTTPS real; 0 en la computadora.
   confiarEnProxy: Number(process.env.TRUST_PROXY || 0),
+  // Diagnóstico temporal: DEPURAR_IP=1 agrega al log la cadena X-Forwarded-For para ajustar TRUST_PROXY.
+  depurarIp: process.env.DEPURAR_IP === '1',
   https: {
     certificado: process.env.HTTPS_CERT && path.resolve(__dirname, '../..', process.env.HTTPS_CERT),
     clave: process.env.HTTPS_KEY && path.resolve(__dirname, '../..', process.env.HTTPS_KEY),
