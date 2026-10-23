@@ -33,11 +33,11 @@ Revisión del 22 y 23 de octubre de 2026 con el agente auditor (Claude Code) apl
 ## Verificaciones
 
 - **Prueba de fuego:** el commit `ef50c55` dio al analista el permiso de eliminar. Fallaron las unitarias y las de integración, el despliegue quedó omitido y Render no recibió el commit. El `git revert` (`d17f6a1`) se desplegó con 11 de 11.
-- **Secretos:** solo se versionaron los `.env.example`. Ninguna de las 13 claves reales de `.env` y `.env.produccion`, ni los Deploy Hooks, aparece en `git log -p`.
+- **Secretos:** solo se versionaron los `.env.example`. Ninguna de las 13 claves reales de `.env` y `.env.produccion`, ni los Deploy Hooks, aparece en `git log -p`. En las capturas de logs (23 y 23b) se taparon la IP pública del equipo y el host de la base.
 - **CSP en el navegador:** el cliente carga sin errores en consola y llega a la API; un script en línea y una conexión a otro dominio quedan bloqueados.
 - **Móvil:** a 375 px no hay desplazamiento horizontal en el inicio de sesión; el equipo revisó el panel a 400 px.
 - **Persistencia:** INC-006 se creó y editó antes de reiniciar el servicio y después seguía "En revisión" (`persistencia-reinicio.txt`).
-- **Producción:** 21 de 21 casos con las tres cuentas.
+- **Producción:** 21 de 21 casos con las tres cuentas, sobre `5665fe9`.
 
 ## Resultado
 

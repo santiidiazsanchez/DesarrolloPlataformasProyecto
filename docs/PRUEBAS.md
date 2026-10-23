@@ -34,7 +34,7 @@ Corren contra `incidentes_test`, una base separada que el script vacía al empez
 
 ## Producción
 
-`scripts/produccion.cjs` prueba la URL pública. Los casos P01 a P11 no necesitan cuentas y corren en Actions después de cada despliegue. P12 a P21 usan las contraseñas de `.env.produccion` y se ejecutan desde la computadora; crean un incidente y lo eliminan al final.
+`scripts/produccion.cjs` prueba la URL pública. Los casos P01 a P11 no necesitan cuentas y corren en Actions después de cada despliegue. P12 a P21 usan las contraseñas de `.env.produccion` y se ejecutan desde la computadora; crean un incidente y lo eliminan al final. La última corrida completa fue sobre `5665fe9` ([resultado](../evidencias/Unidad%208/pruebas-produccion.md)); los commits siguientes solo cambian documentación y evidencias.
 
 | Caso | Esperado | Obtenido |
 | --- | --- | --- |
@@ -100,5 +100,5 @@ Capturas: [11](../evidencias/Unidad%208/11-prueba-fuego-bug.png), [12](../eviden
 | El CRUD funciona y las validaciones responden 400 | Sí (P12 a P21) |
 | Los datos persisten tras reiniciar el servicio | Sí (PF-07: INC-006 creado y editado antes del reinicio, consultado después) |
 | No hay `.env` en ningún commit; la URL de la base y los hooks solo están en Render y GitHub | Sí: solo se versionaron los `.env.example` y ninguna de las 13 claves reales aparece en `git log -p` |
-| Los logs no muestran cuerpos, contraseñas ni tokens | Sí: solo método, ruta, código, duración, usuario y rol ([23](../evidencias/Unidad%208/23-render-logs-sesiones.png), [23b](../evidencias/Unidad%208/23b-render-logs-crud.png)) |
-| El último workflow está en verde y Render tiene el último commit de `main` | Sí (`d17f6a1`, capturas 14 a 16) |
+| Los logs no muestran cuerpos, contraseñas ni tokens | Sí: solo método, ruta, código, duración, usuario y rol ([23](../evidencias/Unidad%208/23-render-logs-sesiones.png), [23b](../evidencias/Unidad%208/23b-render-logs-crud.png)). En las capturas tapamos la IP del cliente y el host de la base |
+| El último workflow está en verde y Render tiene el último commit de `main` | Sí (capturas 14 a 16; `/api/salud` muestra el commit de la etiqueta `v1.0.0`) |

@@ -1,9 +1,9 @@
 # Verificación en producción
 
-- Fecha: 2026-10-23T20:24:02.259Z
+- Fecha: 2026-10-23T20:50:01.262Z
 - API: https://incidentes-api-xqiw.onrender.com/api
 - Cliente: https://incidentes-web-0eqn.onrender.com
-- Versión en línea: d17f6a1
+- Versión en línea: 5665fe9
 - Resultado: 21 de 21 casos correctos
 
 | Caso | Solicitud | Esperado | Obtenido |
@@ -24,8 +24,8 @@
 | ✔ P14 El analista registra un incidente | POST /api/incidentes | 201 | 201 |
 | ✔ P15 Datos inválidos: fecha futura, correo y HTML | POST /api/incidentes | 400 | 400 |
 | ✔ P16 Título repetido | POST /api/incidentes | 409 | 409 |
-| ✔ P17 Rol insuficiente: el analista intenta eliminar | DELETE /api/incidentes/INC-007 | 403 | 403 |
-| ✔ P18 El supervisor cambia el estado | PUT /api/incidentes/INC-007 | 200 | 200 |
-| ✔ P19 El cambio persiste en una nueva consulta | GET /api/incidentes/INC-007 | 200 | 200 |
-| ✔ P20 El administrador elimina el incidente | DELETE /api/incidentes/INC-007 | 204 | 204 |
-| ✔ P21 El incidente eliminado ya no existe | GET /api/incidentes/INC-007 | 404 | 404 |
+| ✔ P17 Rol insuficiente: el analista intenta eliminar | DELETE /api/incidentes/INC-009 | 403 | 403 |
+| ✔ P18 El supervisor cambia el estado | PUT /api/incidentes/INC-009 | 200 | 200 |
+| ✔ P19 El cambio persiste en una nueva consulta | GET /api/incidentes/INC-009 | 200 | 200 |
+| ✔ P20 El administrador elimina el incidente | DELETE /api/incidentes/INC-009 | 204 | 204 |
+| ✔ P21 El incidente eliminado ya no existe | GET /api/incidentes/INC-009 | 404 | 404 |

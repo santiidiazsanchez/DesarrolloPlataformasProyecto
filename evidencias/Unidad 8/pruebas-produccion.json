@@ -1,7 +1,7 @@
 {
   "api": "https://incidentes-api-xqiw.onrender.com/api",
   "web": "https://incidentes-web-0eqn.onrender.com",
-  "version": "d17f6a1",
+  "version": "5665fe9",
   "casos": [
     {
       "id": "P01",
@@ -10,7 +10,7 @@
       "esperado": "200",
       "obtenido": 200,
       "correcto": true,
-      "detalle": "versión d17f6a1, 436 ms"
+      "detalle": "versión 5665fe9, 480 ms"
     },
     {
       "id": "P02",
@@ -127,7 +127,7 @@
       "esperado": "201",
       "obtenido": 201,
       "correcto": true,
-      "detalle": "INC-007"
+      "detalle": "INC-009"
     },
     {
       "id": "P15",
@@ -150,7 +150,7 @@
     {
       "id": "P17",
       "caso": "Rol insuficiente: el analista intenta eliminar",
-      "solicitud": "DELETE /api/incidentes/INC-007",
+      "solicitud": "DELETE /api/incidentes/INC-009",
       "esperado": "403",
       "obtenido": 403,
       "correcto": true,
@@ -159,7 +159,7 @@
     {
       "id": "P18",
       "caso": "El supervisor cambia el estado",
-      "solicitud": "PUT /api/incidentes/INC-007",
+      "solicitud": "PUT /api/incidentes/INC-009",
       "esperado": "200",
       "obtenido": 200,
       "correcto": true,
@@ -168,7 +168,7 @@
     {
       "id": "P19",
       "caso": "El cambio persiste en una nueva consulta",
-      "solicitud": "GET /api/incidentes/INC-007",
+      "solicitud": "GET /api/incidentes/INC-009",
       "esperado": "200",
       "obtenido": 200,
       "correcto": true,
@@ -177,7 +177,7 @@
     {
       "id": "P20",
       "caso": "El administrador elimina el incidente",
-      "solicitud": "DELETE /api/incidentes/INC-007",
+      "solicitud": "DELETE /api/incidentes/INC-009",
       "esperado": "204",
       "obtenido": 204,
       "correcto": true,
@@ -186,7 +186,7 @@
     {
       "id": "P21",
       "caso": "El incidente eliminado ya no existe",
-      "solicitud": "GET /api/incidentes/INC-007",
+      "solicitud": "GET /api/incidentes/INC-009",
       "esperado": "404",
       "obtenido": 404,
       "correcto": true,
