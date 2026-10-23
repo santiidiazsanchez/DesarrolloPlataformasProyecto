@@ -1,6 +1,6 @@
 # Incidentes — Tarea 8
 
-Requisitos: Node.js 22.12 o superior y Docker Desktop encendido.
+Requisitos: Node.js 24.9 o superior y Docker Desktop encendido.
 
 Primera vez, desde esta carpeta:
 

@@ -3,6 +3,7 @@
 // - frontend: servicios del cliente React; Babel convierte sus módulos ES (npm test).
 // - api: integración con PostgreSQL de pruebas en Docker o en GitHub Actions (npm run test:api).
 // Los scripts usan --experimental-vm-modules porque sanitize-html depende de htmlparser2, que solo se publica como ESM.
+// Jest 30 solo carga ESM con require() desde Node 24.9: GitHub Actions lo detectó al correr con Node 22.
 const babel = ['babel-jest', { presets: [['@babel/preset-env', { targets: { node: 'current' } }]] }];
 
 module.exports = {
