@@ -4,7 +4,7 @@ const permisos = {
   consultar: ['ANALISTA', 'SUPERVISOR', 'ADMIN'],
   crear: ['ANALISTA', 'ADMIN'],
   actualizar: ['SUPERVISOR', 'ADMIN'],
-  eliminar: ['ADMIN'],
+  eliminar: ['ANALISTA', 'ADMIN'],
 };
 
 function permisosDe(rol) {
