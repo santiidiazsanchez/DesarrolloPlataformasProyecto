@@ -22,11 +22,13 @@ module.exports = {
   jwtSecret,
   jwtDuracion: process.env.JWT_EXPIRES_IN || '30m',
   // Lista separada por comas, por ejemplo: http://127.0.0.1:5173,http://127.0.0.1:4173
-  origenesPermitidos: requerida('CLIENT_ORIGIN').split(',').map((origen) => origen.trim()).filter(Boolean),
+  // Se quita la / final: el navegador envía el Origin sin ella y la comparación es exacta.
+  origenesPermitidos: requerida('CLIENT_ORIGIN').split(',').map((origen) => origen.trim().replace(/\/+$/, '')).filter(Boolean),
   limitePorMinuto: Number(process.env.LIMITE_POR_MINUTO || 100),
-  // Número de proxies de confianza: 1 en Render. Solo detrás de un proxy HTTPS real; 0 en la computadora.
+  // Número de proxies de confianza; 0 en la computadora. En Render son 3 (Cloudflare, su balanceador
+  // y el proxy local de la instancia), según la cadena X-Forwarded-For que se vio con DEPURAR_IP=1.
   confiarEnProxy: Number(process.env.TRUST_PROXY || 0),
-  // Diagnóstico temporal: DEPURAR_IP=1 agrega al log la cadena X-Forwarded-For para ajustar TRUST_PROXY.
+  // Diagnóstico: DEPURAR_IP=1 agrega al log la cadena X-Forwarded-For. Se usa solo para revisar TRUST_PROXY.
   depurarIp: process.env.DEPURAR_IP === '1',
   https: {
     certificado: process.env.HTTPS_CERT && path.resolve(__dirname, '../..', process.env.HTTPS_CERT),

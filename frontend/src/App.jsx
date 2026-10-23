@@ -160,7 +160,7 @@ export default function App() {
       </div>
     </header>
   );
-  const pie = <footer className="max-w-6xl mx-auto px-5 pb-6 text-xs text-muted-foreground">Desarrollo en Plataformas · Unidad 7 · Prototipo académico</footer>;
+  const pie = <footer className="max-w-6xl mx-auto px-5 pb-6 text-xs text-muted-foreground">Desarrollo en Plataformas · Unidad 8 · Prototipo académico</footer>;
 
   if (verificando) return <>{encabezado}<main className="max-w-6xl mx-auto px-5 py-10"><p role="status" className="text-sm text-muted-foreground">Verificando la sesión…</p></main></>;
   if (!usuario) return <><a className="salto" href="#contenido">Saltar al contenido</a>{encabezado}<InicioSesion aviso={avisoSesion} onIngresar={entrar} />{pie}</>;

@@ -464,3 +464,27 @@ test('al superar el límite por minuto la API responde 429', async () => {
   assert.match(respuesta.headers.get('ratelimit-policy'), /q=400; w=60/);
   assert.equal((await respuesta.json()).error, 'Demasiadas solicitudes. Espera un minuto e intenta de nuevo.');
 });
+
+test('detrás de Render (TRUST_PROXY=3) el límite cuenta la IP del cliente y un X-Forwarded-For falso no lo evade', async () => {
+  // Cadena vista en los logs de Render: cliente, Cloudflare y balanceador interno; el socket es el proxy local.
+  let appRender;
+  process.env.TRUST_PROXY = '3';
+  jest.isolateModules(() => { appRender = require('../app'); });
+  delete process.env.TRUST_PROXY;
+  const servidorRender = appRender.listen(0, '127.0.0.1');
+  await once(servidorRender, 'listening');
+  const ruta = `http://127.0.0.1:${servidorRender.address().port}/api/incidentes`;
+  const restantes = async (cadena) => {
+    const respuesta = await fetch(ruta, { headers: { 'X-Forwarded-For': cadena } });
+    return Number(respuesta.headers.get('ratelimit').match(/r=(\d+)/)[1]);
+  };
+  try {
+    const primera = await restantes('203.0.113.7, 104.22.101.211, 10.28.123.5');
+    // El mismo cliente agrega una IP inventada al inicio: Cloudflare conserva la real y el contador sigue bajando.
+    assert.equal(await restantes('198.51.100.1, 203.0.113.7, 104.22.101.211, 10.28.123.5'), primera - 1);
+    // Otro cliente que pasa por el mismo Cloudflare y balanceador tiene su propio contador.
+    assert.equal(await restantes('203.0.113.8, 104.22.101.211, 10.28.123.5'), primera);
+  } finally {
+    await new Promise((resolve) => servidorRender.close(resolve));
+  }
+});

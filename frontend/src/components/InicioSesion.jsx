@@ -50,7 +50,7 @@ export default function InicioSesion({ aviso, onIngresar }) {
               <Button type="submit" className="w-full">{enviando ? 'Verificando…' : 'Ingresar'}</Button>
             </fieldset>
           </form>
-          <p className="text-xs text-muted-foreground mt-4">Cuentas de prueba: admin, supervisor y analista @incidentes.local. Las contraseñas están en el archivo .env del proyecto.</p>
+          <p className="text-xs text-muted-foreground mt-4">Cuentas de prueba: admin, supervisor y analista @incidentes.local. Las contraseñas están en el informe de entrega (en local, en el archivo .env).</p>
         </CardContent>
       </Card>
     </main>

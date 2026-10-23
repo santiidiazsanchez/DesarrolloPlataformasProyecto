@@ -71,9 +71,13 @@ async function casosPublicos() {
     const ok = /max-age=\d+/.test(hsts) && r.headers.get('x-content-type-options') === 'nosniff' && !r.headers.get('x-powered-by');
     return { estado: r.estado, ok, detalle: hsts };
   });
-  await caso('P04', 'El cliente React carga por HTTPS', 'GET / (sitio)', 200, async () => {
+  await caso('P04', 'El cliente React carga por HTTPS con CSP', 'GET / (sitio)', 200, async () => {
     const r = await pedir('GET', '/', { base: WEB });
-    return { estado: r.estado, ok: (r.headers.get('content-type') || '').includes('text/html') };
+    // Encabezados del panel Headers de Render: el cliente solo llama a su API y no se muestra dentro de un iframe.
+    const csp = r.headers.get('content-security-policy') || '';
+    const ok = (r.headers.get('content-type') || '').includes('text/html') && csp.includes(`connect-src 'self' ${new URL(API).origin}`)
+      && csp.includes("frame-ancestors 'none'") && r.headers.get('x-frame-options') === 'DENY';
+    return { estado: r.estado, ok, detalle: ok ? '' : 'faltan CSP o X-Frame-Options' };
   });
   await caso('P05', 'CORS acepta el dominio del cliente', 'OPTIONS /api/incidentes', 204, async () => {
     const r = await pedir('OPTIONS', '/incidentes', { headers: { Origin: WEB, 'Access-Control-Request-Method': 'GET', 'Access-Control-Request-Headers': 'authorization' } });
